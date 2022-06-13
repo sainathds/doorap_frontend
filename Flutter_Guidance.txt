@@ -1,0 +1,7 @@
+1. Flutter: Best Practices and Tips
+
+https://medium.com/flutter-community/flutter-best-practices-and-tips-7c2782c9ebb5
+
+2. https://docs.flutter.dev/get-started/flutter-for/android-devs
+
+3.https://docs.flutter.dev/get-started/flutter-for/web-devs

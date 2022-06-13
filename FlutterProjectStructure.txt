@@ -1,0 +1,18 @@
+pakage name: com.covidetraveladvisory.app
+
+in assets folder create below packges
+- images
+- fonts
+
+in lib folder make below packges (packg name in small letters sperated by underscore)
+- controller
+- screens
+- resources
+   - MyStrings
+   - MyColors
+   - MyDimension
+   - MyAssets
+    
+- Utils
+  
+ 
