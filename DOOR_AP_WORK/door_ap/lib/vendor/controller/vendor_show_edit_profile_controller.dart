@@ -236,13 +236,19 @@ class VendorShowEditProfileController extends GetxController{
         if(responseModel.status == 200){
           if(responseModel.payload != null){
             cityList =  responseModel.payload!;
-            for(cityListResponse.Payload data in cityList){
-              if(data.id == selectedCityID){
-                selectedCity = data;
-                log("DefaultCity : " + json.encode(selectedCity));
-                break;
+
+            if(selectedCityID != 0){
+              for(cityListResponse.Payload data in cityList){
+                if(data.id == selectedCityID){
+                  selectedCity = data;
+                  log("DefaultCity : " + json.encode(selectedCity));
+                  break;
+                }
               }
+            }else{
+              selectedCity = cityList[0];
             }
+
           }
           refreshPage.call();
         }else{   // if error occur then msg is "Something went wrong or validation msg"

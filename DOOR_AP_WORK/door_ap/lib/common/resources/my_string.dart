@@ -106,10 +106,12 @@ class MyString{
   static const String? accountNo = "Account Number";
   static const String? enterYourAccountNo = "Enter your account number";
   static const String? confirmAccountNo = "Confirm Account Number";
-  static const String? accountHoldersName = "Account Holder's Name";
+  static const String? bankName = "Bank Name";
   static const String? enterName = "Enter Name";
-  static const String? ifscCode = "IFSC Code";
-  static const String? enterIfscCode = "Enter IFSC Code";
+  static const String? bicCode = "Bic Code";
+  static const String? enterBicCode = "Enter Bic Code";
+  static const String? ibanNumber = "IBAN Code";
+  static const String? enterIbanNumber = "Enter IBAN number";
 
   static const String? myOrders = "My orders";
   static const String? myWishlist = "My wishlist";
@@ -141,6 +143,7 @@ class MyString{
 
   static const String? serviceName = "Service Name";
   static const String? enterServiceName = "Enter Service Name";
+  static const String? reviewsAndFeedback = "Reviews & Feedback";
 
 
 

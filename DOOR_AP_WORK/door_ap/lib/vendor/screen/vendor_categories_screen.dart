@@ -156,7 +156,7 @@ class _VendorCategoriesScreenState extends State<VendorCategoriesScreen> {
                   ClipRRect(
                       borderRadius: BorderRadius.all(Radius.circular(10)),
                       child: _getXController.categoriesData[index]!.categoryImage == "" ?
-                      Image(image:  noProfileImg,
+                      Image(image:  noImage,
                         width: 90.0, height: 100.0, fit: BoxFit.fill,)
                           :
                       Image.network(baseImageUrl + _getXController.categoriesData[index]!.categoryImage!,

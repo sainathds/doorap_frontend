@@ -6,7 +6,11 @@ import 'package:door_ap/common/network/request.dart';
 import 'package:door_ap/common/network/url.dart';
 import 'package:door_ap/common/resources/my_assets.dart';
 import 'package:door_ap/common/resources/my_string.dart';
+import 'package:door_ap/common/utils/my_constants.dart';
+import 'package:door_ap/common/utils/my_shared_preference.dart';
+import 'package:door_ap/customer/model/request/customer_cart_count_request.dart';
 import 'package:door_ap/customer/model/response/customer_banner_response.dart' as customerBannerResponse;
+import 'package:door_ap/customer/model/response/customer_cart_count_response.dart';
 import 'package:door_ap/vendor/model/response/vendor_categories_response.dart' as vendorCategoriesResponse;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -18,8 +22,45 @@ class CustomerHomeController extends GetxController{
   TextEditingController searchEditController = TextEditingController();
   List<vendorCategoriesResponse.Payload?>  categoriesData = <vendorCategoriesResponse.Payload?>[];
   List<customerBannerResponse.Payload?>  bannerData = <customerBannerResponse.Payload?>[];
-
   late Function refreshPage;
+
+  int cartCount = 0;
+  int categoryId = 0;
+  int vendorId = 0;
+
+  ///*
+  ///
+  ///
+  void hitCartCountApi() async{
+    CustomerCartCountRequest requestModel = CustomerCartCountRequest();
+    requestModel.customerId = MySharedPreference.getInt(MyConstants.keyUserId);
+
+    final results = await Request().requestPostHeaderNoProgressBar(
+        url: customerCartCountApi,
+        parameters: json.encode(requestModel),
+        context: Get.context);
+
+    try{
+      if(results != null){
+        CustomerCartCountResponse responseModel = CustomerCartCountResponse.fromJson(results);
+        log(tag + "hitCartCountApi Response : " + json.encode(responseModel));
+
+        if(responseModel.status == 200){
+          cartCount = responseModel.payload!.itemCount!;
+          categoryId = responseModel.payload!.categoryId!;
+          vendorId = responseModel.payload!.vendorId!;
+          refreshPage.call();
+        }else{// if error occur then msg is "Something went wrong or validation msg"
+          log('hitCartCountApi Error: ');
+
+        }
+      }
+    }catch(exception){
+      log('hitCartCountApi Exception: ' + exception.toString() );
+    }
+
+
+  }
 
   ///*
   ///
@@ -35,6 +76,7 @@ class CustomerHomeController extends GetxController{
         log(tag + "hitCategoriesApi Response : " + json.encode(responseModel));
         if(responseModel.status == 200){
           if(responseModel.payload != null){
+            categoriesData.clear();
             categoriesData = responseModel.payload!;
             hitBannerListApi();
             refreshPage.call();
@@ -84,6 +126,7 @@ class CustomerHomeController extends GetxController{
         log(tag + "hitBannerListApi Response : " + json.encode(responseModel));
         if(responseModel.status == 200){
           if(responseModel.payload != null){
+            bannerData.clear();
             bannerData = responseModel.payload!;
             refreshPage.call();
           }

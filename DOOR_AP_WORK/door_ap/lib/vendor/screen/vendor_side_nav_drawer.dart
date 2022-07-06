@@ -190,7 +190,7 @@ class _VendorSideNavDrawerState extends State<VendorSideNavDrawer> {
                               title: Text(MyString.bankAccount!, style: menuStyle()),
                               onTap: () {
                                 Navigator.pop(context);
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => const VendorBankAccountScreen()));
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => VendorBankAccountScreen()));
                               }
                           ),
                         ),

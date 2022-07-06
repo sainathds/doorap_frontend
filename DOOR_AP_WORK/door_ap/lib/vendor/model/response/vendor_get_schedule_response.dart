@@ -53,8 +53,8 @@ class Payload {
   bool? _isFriday;
   bool? _isSaturday;
   bool? _isSunday;
-  String? _fromDate;
-  String? _toDate;
+  String? _fromTime;
+  String? _toTime;
   bool? _isSetStatus;
 
   Payload(
@@ -65,8 +65,8 @@ class Payload {
         bool? isFriday,
         bool? isSaturday,
         bool? isSunday,
-        String? fromDate,
-        String? toDate,
+        String? fromTime,
+        String? toTime,
         bool? isSetStatus}) {
     if (isMonday != null) {
       this._isMonday = isMonday;
@@ -89,11 +89,11 @@ class Payload {
     if (isSunday != null) {
       this._isSunday = isSunday;
     }
-    if (fromDate != null) {
-      this._fromDate = fromDate;
+    if (fromTime != null) {
+      this._fromTime = fromTime;
     }
-    if (toDate != null) {
-      this._toDate = toDate;
+    if (toTime != null) {
+      this._toTime = toTime;
     }
     if (isSetStatus != null) {
       this._isSetStatus = isSetStatus;
@@ -114,10 +114,10 @@ class Payload {
   set isSaturday(bool? isSaturday) => _isSaturday = isSaturday;
   bool? get isSunday => _isSunday;
   set isSunday(bool? isSunday) => _isSunday = isSunday;
-  String? get fromDate => _fromDate;
-  set fromDate(String? fromDate) => _fromDate = fromDate;
-  String? get toDate => _toDate;
-  set toDate(String? toDate) => _toDate = toDate;
+  String? get fromTime => _fromTime;
+  set fromDate(String? fromTime) => _fromTime = fromTime;
+  String? get toTime => _toTime;
+  set toDate(String? toTime) => _toTime = toTime;
   bool? get isSetStatus => _isSetStatus;
   set isSetStatus(bool? isSetStatus) => _isSetStatus = isSetStatus;
 
@@ -129,8 +129,8 @@ class Payload {
     _isFriday = json['is_friday'];
     _isSaturday = json['is_saturday'];
     _isSunday = json['is_sunday'];
-    _fromDate = json['from_date'];
-    _toDate = json['to_date'];
+    _fromTime = json['from_time'];
+    _toTime = json['to_time'];
     _isSetStatus = json['is_set_status'];
   }
 
@@ -143,8 +143,8 @@ class Payload {
     data['is_friday'] = this._isFriday;
     data['is_saturday'] = this._isSaturday;
     data['is_sunday'] = this._isSunday;
-    data['from_date'] = this._fromDate;
-    data['to_date'] = this._toDate;
+    data['from_time'] = this._fromTime;
+    data['to_time'] = this._toTime;
     data['is_set_status'] = this._isSetStatus;
     return data;
   }

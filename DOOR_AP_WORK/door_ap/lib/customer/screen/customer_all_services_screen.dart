@@ -5,15 +5,19 @@ import 'package:door_ap/common/resources/my_dimens.dart';
 import 'package:door_ap/common/resources/my_string.dart';
 import 'package:door_ap/common/utils/my_shared_preference.dart';
 import 'package:door_ap/customer/controller/customer_all_services_controller.dart';
+import 'package:door_ap/customer/model/others/customer_address_model.dart';
+import 'package:door_ap/customer/screen/customer_vendors_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 
 class CustomerAllServicesScreen extends StatefulWidget {
 
   String searchQuery;
+  CustomerAddressModel customerAddressModel;
 
-  CustomerAllServicesScreen({Key? key, required this.searchQuery}) : super(key: key);
+  CustomerAllServicesScreen({Key? key, required this.searchQuery, required this.customerAddressModel, } ) : super(key: key);
 
   @override
   _CustomerAllServicesScreenState createState() => _CustomerAllServicesScreenState();
@@ -29,6 +33,7 @@ class _CustomerAllServicesScreenState extends State<CustomerAllServicesScreen> {
     MySharedPreference.getInstance();
     _getXController.searchEditController.text = widget.searchQuery;
     _getXController.refreshPage = refreshPage;
+    _getXController.allServices.clear();
     Future.delayed(Duration.zero, () async {
       _getXController.hitShowAllServicesApi();
     });
@@ -143,56 +148,66 @@ class _CustomerAllServicesScreenState extends State<CustomerAllServicesScreen> {
             child: ListView.builder(
                 itemCount: _getXController.allServices.length,
                 itemBuilder: (BuildContext context, int index){
-                  return Card(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ClipRRect(
-                              borderRadius: BorderRadius.all(Radius.circular(6)),
-                              child:
-                              _getXController.allServices[index].serviceImage != null && _getXController.allServices[index].serviceImage != "" ?
-                              Image.network(baseImageUrl + _getXController.allServices[index].serviceImage!,
-                                width: 60, height: 60, fit: BoxFit.fill,
-                                errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
-                                  return Image(
-                                      image: noImage, width: 60, height: 60, fit: BoxFit.fill);
-                                },
-                                 )
-                                  :
-                              Image(
-                                  image: noImage,
-                                  width: 60, height: 60, fit: BoxFit.fill)
-
-                          ),
-                        ),
-
-                        Expanded(
-                          flex:2,
-                          child: Padding(
+                  return InkWell(
+                    onTap: (){
+                      // Get.to(() => CustomerVendorsScreen(serviceData: _getXController.allServices[index]));
+                      Get.to( () => CustomerVendorsScreen(
+                          serviceOrCategoryName: _getXController.allServices[index].serviceName!,
+                          categoryId: _getXController.allServices[index].fkCategory.toString(),
+                          customerAddressModel: widget.customerAddressModel,
+                          ));
+                    },
+                    child: Card(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(_getXController.allServices[index].serviceName!,
-                                  style: TextStyle(
-                                      fontSize: MyDimens.textSize14,
-                                      color: MyColor.fieldGrey,
-                                      fontFamily: 'montserrat_semiBold'
-                                  ),),
+                            child: ClipRRect(
+                                borderRadius: BorderRadius.all(Radius.circular(6)),
+                                child:
+                                _getXController.allServices[index].serviceImage != null && _getXController.allServices[index].serviceImage != "" ?
+                                Image.network(baseImageUrl + _getXController.allServices[index].serviceImage!,
+                                  width: 60, height: 60, fit: BoxFit.fill,
+                                  errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
+                                    return Image(
+                                        image: noImage, width: 60, height: 60, fit: BoxFit.fill);
+                                  },
+                                   )
+                                    :
+                                Image(
+                                    image: noImage,
+                                    width: 60, height: 60, fit: BoxFit.fill)
 
-                                Text(_getXController.allServices[index].fkCategoryCategoryName!,
-                                  style: TextStyle(
-                                      fontSize: MyDimens.textSize12,
-                                      color: MyColor.labelGrey,
-                                      fontFamily: 'montserrat_semiBold'
-                                  ),),
-                              ],
                             ),
                           ),
-                        )
-                      ],
+
+                          Expanded(
+                            flex:2,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(_getXController.allServices[index].serviceName!,
+                                    style: TextStyle(
+                                        fontSize: MyDimens.textSize14,
+                                        color: MyColor.fieldGrey,
+                                        fontFamily: 'montserrat_semiBold'
+                                    ),),
+
+                                  Text(_getXController.allServices[index].fkCategoryCategoryName!,
+                                    style: TextStyle(
+                                        fontSize: MyDimens.textSize12,
+                                        color: MyColor.labelGrey,
+                                        fontFamily: 'montserrat_semiBold'
+                                    ),),
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   );
                 }),

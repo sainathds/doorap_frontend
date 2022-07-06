@@ -38,21 +38,22 @@ class LoginAskDialog extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
 
-              Container(
-                width: 100,
-                alignment: Alignment.center,
-                padding: const EdgeInsets.only(top: 10.0, right: 10.0, left: 10.0, bottom: 10.0),
-                margin: const EdgeInsets.only(bottom: 20.0, top: 15.0, right: 15),
-                decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(6)),
-                    color: MyColor.selectedOtp
-                ),
-                child: InkWell(
-                  onTap: (){
-                    Navigator.of(context).pop(); // To close the dialog
-                    vendorFunction.call();
-                  },
-                  child: Text("Vendor",  style: titleStyle(),),
+                Expanded(
+                child: Container(
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.only(top: 10.0, right: 10.0, left: 10.0, bottom: 10.0),
+                  margin: const EdgeInsets.only(bottom: 20.0, top: 15.0, right: 15, left: 15.0),
+                  decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(6)),
+                      color: MyColor.selectedOtp
+                  ),
+                  child: InkWell(
+                    onTap: (){
+                      Navigator.of(context).pop(); // To close the dialog
+                      vendorFunction.call();
+                    },
+                    child: Text("Vendor",  style: titleStyle(),),
+                  ),
                 ),
               ),
 
@@ -62,21 +63,22 @@ class LoginAskDialog extends StatelessWidget {
                   fontFamily: 'sf_pro_semibold'
               )),
 
-              Container(
-                width: 100,
-                alignment: Alignment.center,
-                padding: const EdgeInsets.only(top: 10.0, right: 10.0, left: 10.0, bottom: 10.0),
-                margin: const EdgeInsets.only(bottom: 20.0, top: 15.0, left: 15),
-                decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(6)),
-                    color: MyColor.selectedOtp
-                ),
-                child: InkWell(
-                  onTap: (){
-                    Navigator.of(context).pop(); // To close the dialog
-                    customerFunction.call();
-                  },
-                  child: Text("Customer",  textAlign: TextAlign.center,  style: titleStyle(), ),
+              Expanded(
+                child: Container(
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.only(top: 10.0, right: 10.0, left: 10.0, bottom: 10.0),
+                  margin: const EdgeInsets.only(bottom: 20.0, top: 15.0, left: 15, right: 15.0),
+                  decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(6)),
+                      color: MyColor.selectedOtp
+                  ),
+                  child: InkWell(
+                    onTap: (){
+                      Navigator.of(context).pop(); // To close the dialog
+                      customerFunction.call();
+                    },
+                    child: Text("Customer",  textAlign: TextAlign.center,  style: titleStyle(), ),
+                  ),
                 ),
               ),
             ],

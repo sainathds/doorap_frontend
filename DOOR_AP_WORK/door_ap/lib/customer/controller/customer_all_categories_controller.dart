@@ -30,6 +30,7 @@ class CustomerAllCategoriesController extends GetxController{
         log(tag + "hitCategoriesApi Response : " + json.encode(responseModel));
         if(responseModel.status == 200){
           if(responseModel.payload != null){
+            categoriesData.clear();
             categoriesData = responseModel.payload!;
             refreshPage.call();
           }

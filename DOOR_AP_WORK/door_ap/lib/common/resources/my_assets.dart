@@ -52,6 +52,11 @@ var editServiceIcon =  const AssetImage('assets/images/edit_service_ic.png');
 var addImage =  const AssetImage('assets/images/add_image.png');
 var leftSearchIcon =  const AssetImage('assets/images/left_search_ic.png');
 var searchGoIcon =  const AssetImage('assets/images/search_go_ic.png');
+var messageIcon =  const AssetImage('assets/images/message_icon.png');
+var blueChatIcon =  const AssetImage('assets/images/blue_chat_icon.png');
+var emptyCartImg =  const AssetImage('assets/images/empty_cart_img.png');
+var scaleImage =  const AssetImage('assets/images/scale_1.png');
+var scaleColorImage =  const AssetImage('assets/images/scale_color_1.png');
 
 
 

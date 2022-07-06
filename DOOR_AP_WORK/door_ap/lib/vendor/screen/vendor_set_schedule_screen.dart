@@ -215,7 +215,7 @@ class _VendorSetScheduleScreenState extends State<VendorSetScheduleScreen> {
               flex: 1,
               child: ListView.separated(
                   separatorBuilder: (BuildContext context, int index) {
-                    return SizedBox(width: 10);
+                    return SizedBox(width: 5);
                   },
                   scrollDirection: Axis.horizontal,
                   itemCount: _getXController.weekDaysData.length,
@@ -227,22 +227,42 @@ class _VendorSetScheduleScreenState extends State<VendorSetScheduleScreen> {
                             _getXController.weekDaysData[index].isSelected = !_getXController.weekDaysData[index].isSelected!;
                           });
                         },
-                        child: Container(
-                            width: 44,
-                            height: 44,
+                        /*child: Container(
+                            // width: 44,
+                            // height: 44,
                             padding: EdgeInsets.all(3),
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
                               border: Border.all(
                                 color: MyColor.orangeColor,
                               ),
-                              borderRadius: BorderRadius.circular(22),
+                              borderRadius: BorderRadius.circular(50),
                               color: _getXController.weekDaysData[index].isSelected!? MyColor.orangeColor : Colors.white,
                             ),
                             child: Text(_getXController.weekDaysData[index].weekName!,
                               style: TextStyle(
                                   color: _getXController.weekDaysData[index].isSelected!? Colors.white : MyColor.textGrey,
-                                  fontSize: MyDimens.textSize15,
+                                  fontSize: MyDimens.textSize12,
+                                  fontFamily: 'montserrat_medium'
+                              ),)),*/
+
+
+                        child: Container(
+                          width: 44,
+                          height: 44,
+                            padding: EdgeInsets.all(3),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: MyColor.orangeColor,
+                              ),
+                              borderRadius: BorderRadius.circular(50),
+                              color: _getXController.weekDaysData[index].isSelected!? MyColor.orangeColor : Colors.white,
+                            ),
+                            child: Text(_getXController.weekDaysData[index].weekName!,
+                              style: TextStyle(
+                                  color: _getXController.weekDaysData[index].isSelected!? Colors.white : MyColor.textGrey,
+                                  fontSize: MyDimens.textSize12,
                                   fontFamily: 'montserrat_medium'
                               ),)),
                       );
@@ -261,7 +281,7 @@ class _VendorSetScheduleScreenState extends State<VendorSetScheduleScreen> {
   ///
   Widget selectDateTimeContainer() {
     return Padding(
-      padding: const EdgeInsets.only(top: 8.0, right: 8),
+      padding: const EdgeInsets.only(top: 8.0, right: 0),
       child: Row(
         children: [
           Expanded(
@@ -269,20 +289,28 @@ class _VendorSetScheduleScreenState extends State<VendorSetScheduleScreen> {
             child: Padding(
               padding: const EdgeInsets.only(left: 23.0, right: 10.0),
               child: TextFormField(
+                textAlign: TextAlign.center,
                 readOnly: true,
                 controller: _getXController.fromTimeEditController,
                 decoration: InputDecoration(
                   focusColor: Colors.red,
                   border: OutlineInputBorder(),
                   contentPadding:
-                  const EdgeInsets.symmetric(
-                      vertical: 10.0,
-                      horizontal: 10.0),
-                  prefixIcon:
-                  Icon(Icons.access_time, color: MyColor.orangeColor,),
+                  EdgeInsets.symmetric(
+                      vertical: 5.0,
+                      horizontal: 0.0),
+                  prefixIcon: Padding(
+                    padding: const EdgeInsets.only(left: 5.0,),
+                    child: Icon(Icons.access_time, color: MyColor.orangeColor, size: 20,),
+                  ),
+                  prefixIconConstraints: BoxConstraints(maxWidth: 25),
 
-                  suffixIcon:
-                  Icon(Icons.keyboard_arrow_down, color: MyColor.themeBlue,),
+
+                  suffixIcon: Padding(
+                    padding: const EdgeInsets.only(right: 5.0,),
+                    child: Icon(Icons.keyboard_arrow_down, color: MyColor.themeBlue, size: 20),
+                  ),
+                  suffixIconConstraints: BoxConstraints(maxWidth: 25),
                 ),
 
                 onTap: (){
@@ -297,6 +325,7 @@ class _VendorSetScheduleScreenState extends State<VendorSetScheduleScreen> {
             child: Padding(
               padding: const EdgeInsets.only(left: 10.0, right: 23.0),
               child: TextFormField(
+                textAlign: TextAlign.center,
                 readOnly: true,
                 controller: _getXController.toTimeEditController,
                 decoration: const InputDecoration(
@@ -304,13 +333,20 @@ class _VendorSetScheduleScreenState extends State<VendorSetScheduleScreen> {
                   border: OutlineInputBorder(),
                   contentPadding:
                   EdgeInsets.symmetric(
-                      vertical: 10.0,
-                      horizontal: 10.0),
-                  prefixIcon:
-                  Icon(Icons.access_time, color: MyColor.orangeColor,),
+                      vertical: 5.0,
+                      horizontal: 0.0),
+                  prefixIcon: Padding(
+                    padding: const EdgeInsets.only(left: 5.0,),
+                    child: Icon(Icons.access_time, color: MyColor.orangeColor, size: 20,),
+                  ),
+                  prefixIconConstraints: BoxConstraints(maxWidth: 25),
 
-                  suffixIcon:
-                  Icon(Icons.keyboard_arrow_down, color: MyColor.themeBlue,),
+
+                  suffixIcon: Padding(
+                    padding: const EdgeInsets.only(right: 5.0,),
+                    child: Icon(Icons.keyboard_arrow_down, color: MyColor.themeBlue, size: 20),
+                  ),
+                  suffixIconConstraints: BoxConstraints(maxWidth: 25),
                 ),
 
                 onTap: (){
@@ -335,6 +371,7 @@ class _VendorSetScheduleScreenState extends State<VendorSetScheduleScreen> {
     if (result != null) {
       setState(() {
         timeEditController.text = result.format(context);
+
       });
     }
 

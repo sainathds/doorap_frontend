@@ -201,16 +201,19 @@ class _VendorShowEditProfileScreenState extends State<VendorShowEditProfileScree
                   ),
 
 
+                  _getXController.countryList.isNotEmpty?
                   //Select Country
                       Padding(
                         padding: const EdgeInsets.only(top:22.0),
-                        child: countryDropdown(),),
+                        child: countryDropdown(),): SizedBox(),
 
 
+                  _getXController.cityList.isNotEmpty?
                       //Select City
                       Padding(
                         padding: const EdgeInsets.only(top:22.0),
-                        child: cityDropdown(),),
+                        child: cityDropdown(),)
+                  :SizedBox(),
 
 
                   //ZIP code
@@ -694,6 +697,7 @@ class _VendorShowEditProfileScreenState extends State<VendorShowEditProfileScree
       log("SelectedCountry : " + value!.countryName!);
       _getXController.selectedCountry = value;
       _getXController.selectedCountryId = _getXController.selectedCountry.id!;
+      _getXController.selectedCityID = 0;
       _getXController.hitCityListApi();
       },
   );

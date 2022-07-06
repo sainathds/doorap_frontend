@@ -1,20 +1,29 @@
+
+import 'dart:developer';
+
 import 'package:door_ap/common/network/url.dart';
 import 'package:door_ap/common/resources/my_assets.dart';
 import 'package:door_ap/common/resources/my_colors.dart';
 import 'package:door_ap/common/resources/my_dimens.dart';
 import 'package:door_ap/common/resources/my_string.dart';
 import 'package:door_ap/customer/controller/customer_home_controller.dart';
+import 'package:door_ap/customer/model/others/customer_address_model.dart';
+import 'package:door_ap/customer/screen/customer_vendors_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:flutter_swiper_plus/flutter_swiper_plus.dart';
 import 'package:get/get.dart';
 
+import 'cuatomer_cart_summary_screen.dart';
 import 'customer_all_category_screen.dart';
 import 'customer_all_services_screen.dart';
 
 class CustomerHomeScreen extends StatefulWidget {
-  const CustomerHomeScreen({Key? key}) : super(key: key);
+
+  CustomerAddressModel? customerAddressModel;
+
+  CustomerHomeScreen({Key? key, required this.customerAddressModel,}) : super(key: key);
 
   @override
   _CustomerHomeScreenState createState() => _CustomerHomeScreenState();
@@ -26,15 +35,20 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
   @override
   void initState() {
     // TODO: implement initState
-
+    _getXController.categoriesData.clear();
+    _getXController.bannerData.clear();
     _getXController.refreshPage = refreshPage;
+
+    Future.delayed(Duration.zero, () async {
+      _getXController.hitCartCountApi();
+    });
+
     Future.delayed(Duration.zero, () async {
       _getXController.hitCategoriesApi();
     });
-
-    // _getCurrentPosition();
     super.initState();
   }
+
 
   ///*
   ///
@@ -46,7 +60,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.white,
+      statusBarColor: MyColor.themeBlue,
     ));
 
     return SafeArea(
@@ -55,43 +69,38 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
         appBar: AppBar(
           backgroundColor: Colors.white,
           shadowColor: Colors.transparent,
-          leading: Padding(
+          /*leading: Padding(
             padding: const EdgeInsets.only(left: 15.0),
             child: Image(
               image: custHamburgerIcon,
               height: 48,
               width: 48,
             ),
-          ),
+          ),*/
           title: Row(
             children: [
-              Row(
-                children: [
-                  const Icon(
-                    Icons.location_on_sharp,
-                    color: MyColor.themeBlue,
-                  ),
-                  Text("12 Street, Gandhi Road, Nagpur", style: labelStyle()),
-                ],
+              const Icon(
+                Icons.location_on_sharp,
+                color: MyColor.themeBlue,
               ),
+              Expanded(child: Text(widget.customerAddressModel!.address, style: labelStyle(), maxLines: 1,)),
             ],
           ),
-          actions: const [
+          actions: [
+
+            cartIconWidget(),
+
             Padding(
               padding: EdgeInsets.only(right: 20.0),
               child: Icon(
-                Icons.notifications,
+                Icons.notifications_none_rounded,
                 color: MyColor.themeBlue,
               ),
             )
           ],
         ),
         body: Padding(
-          padding: const EdgeInsets.only(
-            left: 23.0,
-            right: 23.0,
-            top: 28.0,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 15.0),
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.max,
@@ -129,7 +138,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
   ///
   Widget searchWidget() {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 32.0),
+      padding: EdgeInsets.symmetric(vertical: 20.0),
       width: MediaQuery.of(context).size.width,
       decoration: const BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(15.0)),
@@ -154,34 +163,44 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
           ),
           Padding(
             padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 19.0),
-            child: TextFormField(
-              controller: _getXController.searchEditController,
-              keyboardType: TextInputType.text,
-              textInputAction: TextInputAction.next,
-              decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30.0),
-                  ),
-                  filled: true,
-                  fillColor: Colors.white,
-                  contentPadding: const EdgeInsets.symmetric(
-                      vertical: 5.0, horizontal: 10.0),
-                  hintText: MyString.search,
-                  hintStyle: const TextStyle(
-                      fontSize: MyDimens.textSize12,
-                      color: Colors.grey,
-                      fontFamily: 'montserrat_semiBold'),
-                  prefixIcon: Image(
-                    image: leftSearchIcon,
-                  ),
-                  suffixIcon: InkWell(
-                    onTap: () {
-                      Get.to(() => CustomerAllServicesScreen(searchQuery : _getXController.searchEditController.text.trim()));
-                    },
-                    child: Image(
-                      image: searchGoIcon,
+            child: Container(
+              height: 45,
+              child: TextFormField(
+                controller: _getXController.searchEditController,
+                keyboardType: TextInputType.text,
+                textInputAction: TextInputAction.next,
+                decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30.0),
                     ),
-                  )),
+                    filled: true,
+                    fillColor: Colors.white,
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 5.0, horizontal: 10.0),
+                    hintText: MyString.search,
+                    hintStyle: const TextStyle(
+                        fontSize: MyDimens.textSize12,
+                        color: Colors.grey,
+                        fontFamily: 'montserrat_semiBold'),
+                    prefixIcon: Image(
+                      image: leftSearchIcon,
+                    ),
+                    suffixIcon: InkWell(
+                      onTap: () async{
+                        var nav =  await Get.to(() => CustomerAllServicesScreen(
+                            searchQuery : _getXController.searchEditController.text.trim(),
+                            customerAddressModel: widget.customerAddressModel!));
+
+
+                        if (nav == true || nav == null) {
+                          _getXController.hitCartCountApi();
+                        }
+                      },
+                      child: Image(
+                        image: searchGoIcon,
+                      ),
+                    )),
+              ),
             ),
           )
         ],
@@ -282,7 +301,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
   bannerWidget() {
     return Container(
       height: 150,
-      margin: EdgeInsets.symmetric(vertical: 30.0),
+      margin: EdgeInsets.symmetric(vertical: 20.0),
       /*decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15)
       ),*/
@@ -321,7 +340,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: 33.0, bottom: 10),
+          padding: const EdgeInsets.only(top: 20.0, bottom: 10),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -333,9 +352,15 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                     fontFamily: 'roboto_bold'),
               ),
               InkWell(
-                onTap: (){
-                  Get.to(const CustomerAllCategoryScreen());
-                },
+                onTap: () async {
+                  var nav =  await Get.to(
+                      CustomerAllCategoryScreen(
+                          customerAddressModel: widget.customerAddressModel!));
+
+                  if (nav == true || nav == null) {
+                    _getXController.hitCartCountApi();
+                  }
+                  },
                 child: Text(
                   MyString.seeAll!,
                   style: TextStyle(
@@ -348,20 +373,28 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
           ),
         ),
         LayoutGrid(
+          gridFit : GridFit.loose,
           // set some flexible track sizes based on the crossAxisCount
           columnSizes: [1.fr, 1.fr, 1.fr],
           // set all the row sizes to auto (self-sizing height)
           rowSizes: _getXController.categoriesData.length <= 3
               ? [auto]
               : [auto, auto],
-          columnGap: 20,
-          rowGap: 20,
+          columnGap: 5,
+          rowGap: 15,
           children: [
             for (var index = 0; index < 6; index++)
               InkWell(
-                onTap: () {
-                  // Get.off( () => VendorServicesScreen(selectedCategData: _getXController.categoriesData[index]!));
-                },
+                onTap: () async {
+                  var nav = await Get.to(() => CustomerVendorsScreen(
+                                                      serviceOrCategoryName: _getXController.categoriesData[index]!.categoryName!,
+                                                      categoryId: _getXController.categoriesData[index]!.id.toString(),
+                                                      customerAddressModel: widget.customerAddressModel!));
+
+                   if (nav == true || nav == null) {
+                     _getXController.hitCartCountApi();
+                   }
+                  },
                 child: Center(
                   child: Column(
                     children: [
@@ -371,8 +404,8 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                                     .categoriesData[index]!.categoryImage ==
                                 ""
                             ? Image(
-                                image: noProfileImg,
-                                width: 101.0,
+                                image: noImage,
+                                // width: 101.0,
                                 height: 114.0,
                                 fit: BoxFit.fill,
                               )
@@ -380,13 +413,13 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                                 baseImageUrl +
                                     _getXController
                                         .categoriesData[index]!.categoryImage!,
-                                width: 101.0,
+                                // width: 101.0,
                                 height: 114.0,
                                 errorBuilder: (BuildContext context,
                                     Object exception, StackTrace? stackTrace) {
                                   return Image(
                                       image: noImage,
-                                      width: 101,
+                                      // width: 101,
                                       height: 114,
                                       fit: BoxFit.fill);
                                 },
@@ -413,18 +446,69 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
     );
   }
 
-// https://stackoverflow.com/questions/69659637/how-to-get-a-users-location-in-flutter
-/*Future<void> _getCurrentPosition() async {
-    final hasPermission = await _handlePermission();
 
-    if (!hasPermission) {
-      return;
-    }
+  ///*
+  ///
+  ///
+  Widget cartIconWidget() {
+    return InkWell(
+      onTap: () async{
+        if(_getXController.cartCount != 0){
+          var nav = await Get.to(() => CustomerCartSummaryScreen(
+            categoryId: _getXController.categoryId,
+            vendorId: _getXController.vendorId,
+              customerAddressModel: widget.customerAddressModel!
+          ));
 
-    final position = await _geolocatorPlatform.getCurrentPosition();
-    _updatePositionList(
-      _PositionItemType.position,
-      position.toString(),
+          if (nav == true || nav == null) {
+            _getXController.hitCartCountApi();
+          }
+        }
+      },
+      child: Container(
+        width: 50,
+        child: Stack(
+          children: [
+            Positioned(
+              top: 0,
+              bottom: 0,
+              left: 5,
+              child: Icon(
+                Icons.shopping_cart_outlined,
+                color: MyColor.themeBlue,
+              ),
+            ),
+
+            _getXController.cartCount != 0?
+            Positioned(
+              top: 10,
+              right: 15,
+              child: Container(
+                height: 18,
+                width: 18,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: MyColor.orangeColor,
+                  borderRadius: BorderRadius.circular(9.0),
+                ),
+                child: Text(
+                  _getXController.cartCount.toString(),
+                  style: TextStyle(
+                      color: MyColor.themeBlue,
+                      fontFamily: 'roboto_bold',
+                      fontSize: MyDimens.textSize10),
+                ),
+              ),
+            ):
+                SizedBox()
+          ],
+        ),
+      ),
     );
-  }*/
+
+  }
+
+
+
+
 }

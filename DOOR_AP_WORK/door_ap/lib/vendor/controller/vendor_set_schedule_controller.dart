@@ -104,6 +104,8 @@ class VendorSetScheduleController extends GetxController{
         VendorSetScheduleResponse responseModel = VendorSetScheduleResponse.fromJson(results);
         log(tag + "hitSetUpdateScheduleApi Response : " + json.encode(responseModel));
         if (responseModel.status == 200) {
+          fromTimeEditController.clear();
+          toTimeEditController.clear();
           showDialog(
             context: Get.context!,
             builder: (BuildContext context1) =>
@@ -177,14 +179,13 @@ class VendorSetScheduleController extends GetxController{
             isSaturday = responseModel.payload![0].isSaturday!;
             isSunday = responseModel.payload![0].isSunday!;
 
-            if(responseModel.payload![0].fromDate != null){
-              fromTimeEditController.text = responseModel.payload![0].fromDate!;
+            if(responseModel.payload![0].fromTime != null){
+              fromTimeEditController.text = responseModel.payload![0].fromTime!;
             }
 
-            if(responseModel.payload![0].toDate != null){
-              toTimeEditController.text = responseModel.payload![0].toDate!;
+            if(responseModel.payload![0].toTime != null){
+              toTimeEditController.text = responseModel.payload![0].toTime!;
             }
-
 
             log("IS_SET_STATUS : " + isSetStatus.toString());
             setWeekDaysData();

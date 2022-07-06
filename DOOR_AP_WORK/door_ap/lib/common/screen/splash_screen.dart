@@ -4,6 +4,7 @@ import 'package:door_ap/common/screen/signup_screen.dart';
 import 'package:door_ap/common/screen/welcom_screen.dart';
 import 'package:door_ap/common/utils/my_constants.dart';
 import 'package:door_ap/common/utils/my_shared_preference.dart';
+import 'package:door_ap/customer/screen/customer_btm_screen.dart';
 import 'package:door_ap/customer/screen/customer_main_screen.dart';
 import 'package:door_ap/vendor/screen/vendor_home_screen.dart';
 import 'package:door_ap/vendor/screen/venodr_profile_screen.dart';
@@ -59,7 +60,7 @@ class _SplashScreenState extends State<SplashScreen> {
           } else {
             Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(
-                  builder: (context) => CustomerMainScreen(),
+                  builder: (context) => CustomerBtmScreen(),
                 ),
                     (route) => false);
           }

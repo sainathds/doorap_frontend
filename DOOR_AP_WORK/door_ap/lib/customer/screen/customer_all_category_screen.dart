@@ -1,16 +1,25 @@
+import 'dart:developer';
+
 import 'package:door_ap/common/network/url.dart';
 import 'package:door_ap/common/resources/my_assets.dart';
 import 'package:door_ap/common/resources/my_colors.dart';
 import 'package:door_ap/common/resources/my_dimens.dart';
 import 'package:door_ap/common/resources/my_string.dart';
 import 'package:door_ap/customer/controller/customer_all_categories_controller.dart';
+import 'package:door_ap/customer/model/others/customer_address_model.dart';
+import 'package:door_ap/customer/screen/customer_vendors_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 
 class CustomerAllCategoryScreen extends StatefulWidget {
-  const CustomerAllCategoryScreen({Key? key}) : super(key: key);
+
+  CustomerAddressModel? customerAddressModel;
+
+  CustomerAllCategoryScreen({Key? key, required this.customerAddressModel,}) : super(key: key);
 
   @override
   _CustomerAllCategoryScreenState createState() =>
@@ -18,17 +27,17 @@ class CustomerAllCategoryScreen extends StatefulWidget {
 }
 
 class _CustomerAllCategoryScreenState extends State<CustomerAllCategoryScreen> {
-  CustomerAllCategoriesController _getXController =
-      Get.put(CustomerAllCategoriesController());
+  CustomerAllCategoriesController _getXController = Get.put(CustomerAllCategoriesController());
 
   @override
   void initState() {
     // TODO: implement initState
 
-    _getXController.refreshPage = refreshPage;
     Future.delayed(Duration.zero, () async {
       _getXController.hitCategoriesApi();
     });
+    _getXController.refreshPage = refreshPage;
+    _getXController.categoriesData.clear();
     super.initState();
   }
 
@@ -68,7 +77,7 @@ class _CustomerAllCategoryScreenState extends State<CustomerAllCategoryScreen> {
             ),
           ),
           body: Padding(
-            padding: EdgeInsets.only(left: 10.0, right: 10.0, top: 22.0),
+            padding: EdgeInsets.only(left: 0.0, right: 0.0, top: 15.0),
             child: Column(
               children: [
                 // searchWidget(),
@@ -129,15 +138,17 @@ class _CustomerAllCategoryScreenState extends State<CustomerAllCategoryScreen> {
         rowSizes: List<IntrinsicContentTrackSize>.generate(
             (_getXController.categoriesData.length / 2).round(),
             (int index) => auto),
-        rowGap: 20,
+        rowGap: 15,
         children: [
           for (var index = 0;
               index < _getXController.categoriesData.length;
               index++)
             InkWell(
               onTap: () {
-                // Get.off( () => VendorServicesScreen(selectedCategData: _getXController.categoriesData[index]!));
-              },
+                Get.to(() => CustomerVendorsScreen(serviceOrCategoryName: _getXController.categoriesData[index]!.categoryName!,
+                    categoryId: _getXController.categoriesData[index]!.id.toString(),
+                    customerAddressModel: widget.customerAddressModel!));
+                },
               child: Center(
                 child: Column(
                   children: [
@@ -148,7 +159,7 @@ class _CustomerAllCategoryScreenState extends State<CustomerAllCategoryScreen> {
                               ""
                           ? Image(
                               image: noProfileImg,
-                              width: 101.0,
+                              // width: 101.0,
                               height: 114.0,
                               fit: BoxFit.fill,
                             )
@@ -156,13 +167,13 @@ class _CustomerAllCategoryScreenState extends State<CustomerAllCategoryScreen> {
                               baseImageUrl +
                                   _getXController
                                       .categoriesData[index]!.categoryImage!,
-                              width: 101.0,
+                              // width: 101.0,
                               height: 114.0,
                               errorBuilder: (BuildContext context,
                                   Object exception, StackTrace? stackTrace) {
                                 return Image(
                                     image: noImage,
-                                    width: 101,
+                                    // width: 101,
                                     height: 114,
                                     fit: BoxFit.fill);
                               },
@@ -187,4 +198,5 @@ class _CustomerAllCategoryScreenState extends State<CustomerAllCategoryScreen> {
       ),
     );
   }
+
 }

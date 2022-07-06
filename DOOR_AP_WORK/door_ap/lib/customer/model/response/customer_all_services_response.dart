@@ -49,12 +49,14 @@ class Payload {
   int? _id;
   String? _serviceName;
   String? _serviceImage;
+  int? _fkCategory;
   String? _fkCategoryCategoryName;
 
   Payload(
       {int? id,
         String? serviceName,
         String? serviceImage,
+        int? fkCategory,
         String? fkCategoryCategoryName}) {
     if (id != null) {
       this._id = id;
@@ -64,6 +66,9 @@ class Payload {
     }
     if (serviceImage != null) {
       this._serviceImage = serviceImage;
+    }
+    if (fkCategory != null) {
+      this._fkCategory = fkCategory;
     }
     if (fkCategoryCategoryName != null) {
       this._fkCategoryCategoryName = fkCategoryCategoryName;
@@ -76,6 +81,8 @@ class Payload {
   set serviceName(String? serviceName) => _serviceName = serviceName;
   String? get serviceImage => _serviceImage;
   set serviceImage(String? serviceImage) => _serviceImage = serviceImage;
+  int? get fkCategory => _fkCategory;
+  set fkCategory(int? fkCategory) => _fkCategory = fkCategory;
   String? get fkCategoryCategoryName => _fkCategoryCategoryName;
   set fkCategoryCategoryName(String? fkCategoryCategoryName) =>
       _fkCategoryCategoryName = fkCategoryCategoryName;
@@ -84,6 +91,7 @@ class Payload {
     _id = json['id'];
     _serviceName = json['service_name'];
     _serviceImage = json['service_image'];
+    _fkCategory = json['fk_category'];
     _fkCategoryCategoryName = json['fk_category__category_name'];
   }
 
@@ -92,6 +100,7 @@ class Payload {
     data['id'] = this._id;
     data['service_name'] = this._serviceName;
     data['service_image'] = this._serviceImage;
+    data['fk_category'] = this._fkCategory;
     data['fk_category__category_name'] = this._fkCategoryCategoryName;
     return data;
   }

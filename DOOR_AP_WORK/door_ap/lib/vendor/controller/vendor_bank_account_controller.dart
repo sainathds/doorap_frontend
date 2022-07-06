@@ -21,19 +21,31 @@ class VendorBankAccountController extends GetxController{
   String tag = "VendorBankAccountController";
   TextEditingController accountNoEditController = TextEditingController();
   TextEditingController confirmAccNoEditController = TextEditingController();
-  TextEditingController holderNameEditController = TextEditingController();
-  TextEditingController ifscCodeEditController = TextEditingController();
+  TextEditingController bankNameEditController = TextEditingController();
+  TextEditingController bicCodeEditController = TextEditingController();
+  TextEditingController ibanCodeEditController = TextEditingController();
 
   FocusNode accountNoFocus = FocusNode();
   FocusNode confirmAccNoFocus = FocusNode();
-  FocusNode holderNameFocus = FocusNode();
-  FocusNode ifscCodeFocus = FocusNode();
+  FocusNode bankNameFocus = FocusNode();
+  FocusNode bicCodeFocus = FocusNode();
+  FocusNode ibanNumberFocus = FocusNode();
+
 
   bool isAccountNoEmpty = false;
   bool isConfirmAccNoEmpty = false;
   bool isConfirmAccNoValid = false;
-  bool isHolderNameEmpty = false;
-  bool isIfscCodeEmpty = false;
+  bool isBicCodeEmpty = false;
+  bool isBankNameEmpty = false;
+  bool isIbanNumberEmpty = false;
+
+
+  /*For France
+IBAN number
+Bic code
+Account number
+Bank
+*/
 
 
   ///*
@@ -41,8 +53,11 @@ class VendorBankAccountController extends GetxController{
   void clearTextField(){
     accountNoEditController.clear();
     confirmAccNoEditController.clear();
-    holderNameEditController.clear();
-    ifscCodeEditController.clear();
+    bankNameEditController.clear();
+    bicCodeEditController.clear();
+    ibanCodeEditController.clear();
+
+
   }
 
   ///*
@@ -51,8 +66,9 @@ class VendorBankAccountController extends GetxController{
      isAccountNoEmpty = false;
      isConfirmAccNoEmpty = false;
      isConfirmAccNoValid = false;
-     isHolderNameEmpty = false;
-     isIfscCodeEmpty = false;
+     isBicCodeEmpty = false;
+     isBankNameEmpty = false;
+     isIbanNumberEmpty = false;
   }
 
   ///*
@@ -70,19 +86,26 @@ class VendorBankAccountController extends GetxController{
       isConfirmAccNoEmpty = false;
       isAccountNoEmpty = false;
 
-    }else if(holderNameEditController.text.isEmpty){
-      isHolderNameEmpty = true;
+    }else if(bankNameEditController.text.isEmpty){
+      isBankNameEmpty = true;
       isConfirmAccNoValid = false;
       isConfirmAccNoEmpty = false;
       isAccountNoEmpty = false;
 
-    }else if(ifscCodeEditController.text.isEmpty){
-      isIfscCodeEmpty = true;
-      isHolderNameEmpty = false;
+    }else if(bicCodeEditController.text.isEmpty) {
+      isBicCodeEmpty = true;
+      isBankNameEmpty = false;
       isConfirmAccNoValid = false;
       isConfirmAccNoEmpty = false;
       isAccountNoEmpty = false;
 
+    }else if(ibanCodeEditController.text.isEmpty){
+      isIbanNumberEmpty = true;
+      isBicCodeEmpty = false;
+      isBankNameEmpty = false;
+      isConfirmAccNoValid = false;
+      isConfirmAccNoEmpty = false;
+      isAccountNoEmpty = false;
     }else{
       hitAddAccountApi();
     }
@@ -95,9 +118,11 @@ class VendorBankAccountController extends GetxController{
   void hitAddAccountApi() async{
     VendorAddAccountRequest requestModel = VendorAddAccountRequest();
     requestModel.id = MySharedPreference.getInt(MyConstants.keyUserId);
-    requestModel.accountNo = int.parse(accountNoEditController.text);
-    requestModel.accountHolderName = holderNameEditController.text;
-    requestModel.ifscCode = ifscCodeEditController.text;
+    requestModel.accountNo = int.parse(accountNoEditController.text.trim());
+    requestModel.bankName = bankNameEditController.text.trim();
+    requestModel.bICCode = bicCodeEditController.text.trim();
+    requestModel.iBANNo = ibanCodeEditController.text.trim();
+
 
     final results = await Request().requestPostWithHeader(
         url: vendorAddBankAccountApi,

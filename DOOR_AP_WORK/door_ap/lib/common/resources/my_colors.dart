@@ -21,8 +21,13 @@ class MyColor{
 
   static const Color fieldBorderGrey = Color(0xFFACA9A9);
 
+  static const Color black50 = Color(0x80000000);
+  static const Color dividerColor = Color(0x4D707070);
+
+
   //#F59C28
   static const Color orangeColor = Color(0xFFF59C28);
+  static const Color orangeColor1 = Color(0xFFE3F5F1);
 
 
 

@@ -8,7 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class VendorBankAccountScreen extends StatefulWidget {
-  const VendorBankAccountScreen({Key? key}) : super(key: key);
+
+  VendorBankAccountScreen({Key? key}) : super(key: key);
 
   @override
   _VendorBankAccountScreenState createState() => _VendorBankAccountScreenState();
@@ -21,6 +22,8 @@ class _VendorBankAccountScreenState extends State<VendorBankAccountScreen> {
   @override
   void initState() {
     // TODO: implement initState
+    _getXController.clearTextField();
+    _getXController.setAllFieldToFalse();
     MySharedPreference.getInstance();
     super.initState();
   }
@@ -93,19 +96,24 @@ class _VendorBankAccountScreenState extends State<VendorBankAccountScreen> {
 
                           Padding(
                             padding: const EdgeInsets.only(top: 22.0),
-                            child: holderNameField(),
+                            child: bicCodeField(),
                           ),
 
                           Padding(
                             padding: const EdgeInsets.only(top: 22.0),
-                            child: ifscCodeField(),
+                            child: ibanNumberField(),
+                          ),
+
+                          Padding(
+                            padding: const EdgeInsets.only(top: 22.0),
+                            child: bankNameField(),
                           ),
 
                           ///*
                           /// button
                           Container(
                             width: double.infinity,
-                            margin: const EdgeInsets.only(top: 40.0),
+                            margin: const EdgeInsets.only(top: 40.0, bottom: 30.0),
                             child: ElevatedButton(
                                 onPressed: (){
                                   _getXController.isBankDataValid();
@@ -205,7 +213,7 @@ class _VendorBankAccountScreenState extends State<VendorBankAccountScreen> {
         errorText: _getXController.isConfirmAccNoEmpty ? "Please Enter Confirm Account no" : _getXController.isConfirmAccNoValid ? "Confirm account no doesn't matched" : null ,
       ),
       onEditingComplete: (){
-        _getXController.holderNameFocus.requestFocus();
+        _getXController.bicCodeFocus.requestFocus();
       },
     );
   }
@@ -213,17 +221,17 @@ class _VendorBankAccountScreenState extends State<VendorBankAccountScreen> {
   ///*
   ///
   ///
-  Widget holderNameField() {
+  Widget bankNameField() {
     return TextFormField(
       onTap: () {
         setState(() {
           _getXController.setAllFieldToFalse();
         });
       },
-      controller: _getXController.holderNameEditController,
+      controller: _getXController.bankNameEditController,
       keyboardType: TextInputType.text,
       textInputAction: TextInputAction.next,
-      focusNode: _getXController.holderNameFocus,
+      focusNode: _getXController.bankNameFocus,
       style: fieldStyle(),
       decoration: InputDecoration(
         contentPadding:
@@ -231,14 +239,14 @@ class _VendorBankAccountScreenState extends State<VendorBankAccountScreen> {
             vertical: 10.0,
             horizontal: 10.0),
         border: OutlineInputBorder(),
-        labelText: MyString.accountHoldersName,
+        labelText: MyString.bankName,
         labelStyle: labelStyle(),
         hintText: MyString.enterName,
-        errorText: _getXController.isHolderNameEmpty ? "Please Enter Name" : null ,
+        errorText: _getXController.isBankNameEmpty ? "Please Enter Bank Name" : null ,
       ),
-      onEditingComplete: (){
-        _getXController.ifscCodeFocus.requestFocus();
-      },
+      /*onEditingComplete: (){
+        _getXController.ibanNumberFocus.requestFocus();
+      },*/
     );
 
   }
@@ -246,17 +254,17 @@ class _VendorBankAccountScreenState extends State<VendorBankAccountScreen> {
   ///*
   ///
   ///
-  Widget ifscCodeField() {
+  Widget bicCodeField() {
     return TextFormField(
       onTap: () {
         setState(() {
           _getXController.setAllFieldToFalse();
         });
       },
-      controller: _getXController.ifscCodeEditController,
+      controller: _getXController.bicCodeEditController,
       keyboardType: TextInputType.text,
       textInputAction: TextInputAction.next,
-      focusNode: _getXController.ifscCodeFocus,
+      focusNode: _getXController.bicCodeFocus,
       style: fieldStyle(),
       decoration: InputDecoration(
         contentPadding:
@@ -264,15 +272,45 @@ class _VendorBankAccountScreenState extends State<VendorBankAccountScreen> {
             vertical: 10.0,
             horizontal: 10.0),
         border: OutlineInputBorder(),
-        labelText: MyString.ifscCode,
+        labelText: MyString.bicCode,
         labelStyle: labelStyle(),
-        hintText: MyString.enterIfscCode,
-        errorText: _getXController.isIfscCodeEmpty ? "Please Enter IFSC Code" : null ,
+        hintText: MyString.enterBicCode,
+        errorText: _getXController.isBicCodeEmpty ? "Please Enter Bic Code" : null ,
       ),
     );
 
   }
 
+
+  ///*
+  ///
+  ///
+  Widget ibanNumberField() {
+    return TextFormField(
+      onTap: () {
+        setState(() {
+          _getXController.setAllFieldToFalse();
+        });
+      },
+      controller: _getXController.ibanCodeEditController,
+      keyboardType: TextInputType.text,
+      textInputAction: TextInputAction.next,
+      focusNode: _getXController.ibanNumberFocus,
+      style: fieldStyle(),
+      decoration: InputDecoration(
+        contentPadding:
+        const EdgeInsets.symmetric(
+            vertical: 10.0,
+            horizontal: 10.0),
+        border: OutlineInputBorder(),
+        labelText: MyString.ibanNumber,
+        labelStyle: labelStyle(),
+        hintText: MyString.enterIbanNumber,
+        errorText: _getXController.isIbanNumberEmpty ? "Please Enter IBAN number" : null ,
+      ),
+    );
+
+  }
 
   ///*
   ///
