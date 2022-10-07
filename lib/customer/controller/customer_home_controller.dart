@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:door_ap/common/helperclass/ok_dialog.dart';
+import 'package:door_ap/common/model/request/notification_count_request.dart';
+import 'package:door_ap/common/model/response/notification_count_response.dart';
 import 'package:door_ap/common/network/request.dart';
 import 'package:door_ap/common/network/url.dart';
 import 'package:door_ap/common/resources/my_assets.dart';
@@ -25,6 +27,7 @@ class CustomerHomeController extends GetxController{
   List<customerBannerResponse.Payload?>  bannerData = <customerBannerResponse.Payload?>[];
   late Function refreshPage;
 
+  int notificationCount = 0;
 
 
   // int cartCount = 0;
@@ -65,6 +68,44 @@ class CustomerHomeController extends GetxController{
 
 
   }
+
+  ///*
+  ///
+  ///
+  void hitNotificationCountApi() async{
+    NotificationCountRequest requestModel = NotificationCountRequest();
+    requestModel.userId = MySharedPreference.getInt(MyConstants.keyUserId);
+    requestModel.userType = 'Customer';
+
+    final results = await Request().requestPostHeaderNoProgressBar(
+        url: notificationCountApi,
+        parameters: json.encode(requestModel),
+        context: Get.context);
+
+    try{
+      if(results != null){
+
+        NotificationCountResponse responseModel = NotificationCountResponse.fromJson(results);
+        log(tag + "hitNotificationCountApi Response : " + json.encode(responseModel));
+
+        if(responseModel.status == 200){
+          notificationCount = responseModel.notificationCount!;
+          refreshPage.call();
+        }else{// if error occur then msg is "Something went wrong or validation msg"
+          log('hitNotificationCountApi Error: ');
+          notificationCount = 0;
+          refreshPage.call();
+        }
+      }
+    }catch(exception){
+      log('hitNotificationCountApi Exception: ' + exception.toString() );
+      notificationCount = 0;
+      refreshPage.call();
+    }
+
+  }
+
+
 
   ///*
   ///

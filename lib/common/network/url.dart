@@ -1,5 +1,7 @@
-const baseUrl = "http://54.84.67.39:8000/api/";
-const customerBaseUrl = "http://54.84.67.39:8000/customer/";
+const baseUrl = "https://doorap.com/";
+const vendorBaseUrl = "https://doorap.com/api/";
+const customerBaseUrl = "https://doorap.com/customer/";
+
 
 // const baseUrl = "http://54.84.67.39:8040/api/";
 // const customerBaseUrl = "http://54.84.67.39:8040/customer/"; //local
@@ -11,46 +13,53 @@ const customerBaseUrl = "http://54.84.67.39:8000/customer/";
 const baseImageUrl = "https://doorap-s3-bucket.s3.amazonaws.com/";
 
 
-const getOtpApi = baseUrl + "get_otp/";
-const signupApi = baseUrl + "sign_up/";
-const loginApi = baseUrl + "login/";
-const cityListApi = baseUrl + "get_city/";
-const countryListApi = baseUrl + "get_country/";
-const forgotPasswordOtpApi = baseUrl + "forgor_password_otp/";
-const forgotPasswordApi = baseUrl + "forgot_password/";
-const changePasswordApi = baseUrl + "change_password/";
+// const getOtpApi = baseUrl + "get_otp/";
+// const signupApi = baseUrl + "sign_up/";
+// const loginApi = baseUrl + "login/";
+
+const getOtpApi = vendorBaseUrl + "social_otp/";
+const signupApi = vendorBaseUrl + "social_signup/";
+const loginApi = vendorBaseUrl + "social_login/";
+
+const cityListApi = vendorBaseUrl + "get_city/";
+const countryListApi = vendorBaseUrl + "get_country/";
+const forgotPasswordOtpApi = vendorBaseUrl + "forgor_password_otp/";
+const forgotPasswordApi = vendorBaseUrl + "forgot_password/";
+const changePasswordApi = vendorBaseUrl + "change_password/";
 
 
 
-const vendorSaveProfileApi = baseUrl + "save_profile/";
-const vendorViewProfileApi = baseUrl + "view_profile/";
-const vendorEditProfileApi = baseUrl + "edit_profile/";
+const vendorSaveProfileApi = vendorBaseUrl + "save_profile/";
+const vendorViewProfileApi = vendorBaseUrl + "view_profile/";
+const vendorEditProfileApi = vendorBaseUrl + "edit_profile/";
 
-const vendorAddBankAccountApi = baseUrl + "add_bank_account/";
-const vendorGetBankAccountApi = baseUrl + "show_account_detail/";
-const vendorSetAvailabilityApi = baseUrl + "user_available/";
+const vendorAddBankAccountApi = vendorBaseUrl + "add_bank_account/";
+const vendorGetBankAccountApi = vendorBaseUrl + "show_account_detail/";
+const vendorSetAvailabilityApi = vendorBaseUrl + "user_available/";
 
-const vendorCategoriesApi = baseUrl + "view_category/";
-const vendorServicesApi = baseUrl + "show_services/";
-const vendorFacilityListApi = baseUrl + "facility_list/";
-const vendorSetServicesApi = baseUrl + "vender_add_services/";
-const showVendorServicesApi = baseUrl + "vender_show_services/";
-const vendorUpdateServicesApi = baseUrl + "vender_edit_services/";
-const vendorDeleteServicesApi = baseUrl + "delete_services/";
-const vendorCustomServicesApi = baseUrl + "add_custom_service/";
-
-
-const vendorGetScheduleApi = baseUrl + "show_set_schedule/";
-const vendorSetUpdateScheduleApi = baseUrl + "set_schedule/";
-const vendorSelectedFacilityListApi = baseUrl + "vendor_facility_list/";
-
-const vendorOrderListApi = baseUrl + "show_order_to_vendor/";
-const vendorAcceptDeclineOrderApi = baseUrl + "order_accept_decline/";
-const vendorStartOrderApi = baseUrl + "order_start_job/";
-const vendorCurrentOrderApi = baseUrl + "show_running_job/";
-const vendorOrderDetailsApi = baseUrl + "show_vendor_order_detail/";
+const vendorCategoriesApi = vendorBaseUrl + "view_category/";
+const vendorServicesApi = vendorBaseUrl + "show_services/";
+const vendorFacilityListApi = vendorBaseUrl + "facility_list/";
+const vendorSetServicesApi = vendorBaseUrl + "vender_add_services/";
+const showVendorServicesApi = vendorBaseUrl + "vender_show_services/";
+const vendorUpdateServicesApi = vendorBaseUrl + "vender_edit_services/";
+const vendorDeleteServicesApi = vendorBaseUrl + "delete_services/";
+const vendorCustomServicesApi = vendorBaseUrl + "add_custom_service/";
 
 
+const vendorGetScheduleApi = vendorBaseUrl + "show_set_schedule/";
+const vendorSetUpdateScheduleApi = vendorBaseUrl + "set_schedule/";
+const vendorSelectedFacilityListApi = vendorBaseUrl + "vendor_facility_list/";
+
+const vendorOrderListApi = vendorBaseUrl + "show_order_to_vendor/";
+const vendorAcceptDeclineOrderApi = vendorBaseUrl + "order_accept_decline/";
+const vendorStartOrderApi = vendorBaseUrl + "order_start_job/";
+const vendorCurrentOrderApi = vendorBaseUrl + "show_running_job/";
+const vendorOrderDetailsApi = vendorBaseUrl + "show_vendor_order_detail/";
+
+const vendorBalancePaymentApi = vendorBaseUrl + "show_vendor_totalearning/";
+const vendorWithdrawPaymentApi = vendorBaseUrl + "withdraw_request/";
+const vendorReceivedPaymentApi = vendorBaseUrl + "show_received_payment/";
 
 
 ///*
@@ -84,6 +93,10 @@ const customerCreatePaymentIntentApi = customerBaseUrl + 'stripe_payment/';
 
 
 const logoutApi = customerBaseUrl + "logout_api/";  //use for both vendor and customer
+const notificationListApi = customerBaseUrl + "show_notification/";  //use for both vendor and customer
+const seenNotificationApi = customerBaseUrl + "notification_seen/";  //use for both vendor and customer
+const clearNotificationApi = customerBaseUrl + "delete_notification/";  //use for both vendor and customer
+const notificationCountApi = customerBaseUrl + "notification_count/";  //use for both vendor and customer
 
 
 //

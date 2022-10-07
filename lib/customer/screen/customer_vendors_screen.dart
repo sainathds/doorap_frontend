@@ -5,6 +5,7 @@ import 'package:door_ap/common/network/url.dart';
 import 'package:door_ap/common/resources/my_assets.dart';
 import 'package:door_ap/common/resources/my_colors.dart';
 import 'package:door_ap/common/resources/my_dimens.dart';
+import 'package:door_ap/common/screen/chat_screen.dart';
 import 'package:door_ap/common/utils/global_data.dart';
 import 'package:door_ap/customer/controller/customer_vendors_controller.dart';
 import 'package:door_ap/customer/model/others/customer_address_model.dart';
@@ -210,27 +211,33 @@ class _CustomerVendorsScreenState extends State<CustomerVendorsScreen> {
                                       },)),
                               ),
 
-/*
-                              Positioned(
+                              /*Positioned(
                                 bottom: 5,
                                   right: 15,
-                                  child: Card(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(50), ),
+                                  child: InkWell(
+                                    onTap: (){
+                                      Get.to(() => ChatScreen(
+                                          receiverId: _getXController.vendorsData![index].fkVendorFkUserId!,
+                                          receiverName: _getXController.vendorsData![index].fkVendorFullName!,
+                                          callFrom: "",));
+                                    },
+                                    child: Card(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(50), ),
                                 elevation: 5,
                                 child: Container(
-                                  height: 40,
-                                  width: 40,
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(50),
-                                    color: MyColor.inactiveOtp
-                                  ),
-                                  child: Image(image: messageIcon,),
+                                    height: 40,
+                                    width: 40,
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(50),
+                                      color: MyColor.inactiveOtp
+                                    ),
+                                    child: Image(image: messageIcon,),
                                 ),
-                              )),
+                              ),
+                                  )),
 */
-
                               //like dislike
                               Positioned(
                                 top: 10,

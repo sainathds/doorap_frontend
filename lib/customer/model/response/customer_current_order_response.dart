@@ -49,6 +49,7 @@ class Payload {
   int? _id;
   String? _orderId;
   int? _fkVendor;
+  int? _fkVendorFkUserId;
   String? _fkVendorProfileImage;
   String? _fkVendorFullName;
   String? _fkVendorGoogleAddress;
@@ -62,12 +63,13 @@ class Payload {
   double? _totalAmount;
   String? _orderStatus;
   Service? _service;
-  int? _rating;
+  double? _rating;
 
   Payload(
       {int? id,
         String? orderId,
         int? fkVendor,
+        int? fkVendorFkUserId,
         String? fkVendorProfileImage,
         String? fkVendorFullName,
         String? fkVendorGoogleAddress,
@@ -81,7 +83,7 @@ class Payload {
         double? totalAmount,
         String? orderStatus,
         Service? service,
-        int? rating}) {
+        double? rating}) {
     if (id != null) {
       this._id = id;
     }
@@ -90,6 +92,9 @@ class Payload {
     }
     if (fkVendor != null) {
       this._fkVendor = fkVendor;
+    }
+    if (fkVendorFkUserId != null) {
+      this._fkVendorFkUserId = fkVendorFkUserId;
     }
     if (fkVendorProfileImage != null) {
       this._fkVendorProfileImage = fkVendorProfileImage;
@@ -141,6 +146,9 @@ class Payload {
   set orderId(String? orderId) => _orderId = orderId;
   int? get fkVendor => _fkVendor;
   set fkVendor(int? fkVendor) => _fkVendor = fkVendor;
+  int? get fkVendorFkUserId => _fkVendorFkUserId;
+  set fkVendorFkUserId(int? fkVendorFkUserId) =>
+      _fkVendorFkUserId = fkVendorFkUserId;
   String? get fkVendorProfileImage => _fkVendorProfileImage;
   set fkVendorProfileImage(String? fkVendorProfileImage) =>
       _fkVendorProfileImage = fkVendorProfileImage;
@@ -176,13 +184,14 @@ class Payload {
   set orderStatus(String? orderStatus) => _orderStatus = orderStatus;
   Service? get service => _service;
   set service(Service? service) => _service = service;
-  int? get rating => _rating;
-  set rating(int? rating) => _rating = rating;
+  double? get rating => _rating;
+  set rating(double? rating) => _rating = rating;
 
   Payload.fromJson(Map<String, dynamic> json) {
     _id = json['id'];
     _orderId = json['order_id'];
     _fkVendor = json['fk_vendor'];
+    _fkVendorFkUserId = json['fk_vendor__fk_user__id'];
     _fkVendorProfileImage = json['fk_vendor__profile_image'];
     _fkVendorFullName = json['fk_vendor__full_name'];
     _fkVendorGoogleAddress = json['fk_vendor__google_address'];
@@ -205,6 +214,7 @@ class Payload {
     data['id'] = this._id;
     data['order_id'] = this._orderId;
     data['fk_vendor'] = this._fkVendor;
+    data['fk_vendor__fk_user__id'] = this._fkVendorFkUserId;
     data['fk_vendor__profile_image'] = this._fkVendorProfileImage;
     data['fk_vendor__full_name'] = this._fkVendorFullName;
     data['fk_vendor__google_address'] = this._fkVendorGoogleAddress;

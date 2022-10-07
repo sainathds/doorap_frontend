@@ -1,15 +1,20 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:door_ap/common/helperclass/login_ask_dialog.dart';
 import 'package:door_ap/common/helperclass/customdialog.dart';
 import 'package:door_ap/common/helperclass/ok_dialog.dart';
+import 'package:door_ap/common/model/other/firestore_user_model.dart';
 import 'package:door_ap/common/model/request/login_request.dart';
 import 'package:door_ap/common/model/response/login_response.dart';
 import 'package:door_ap/common/network/request.dart';
 import 'package:door_ap/common/network/url.dart';
 import 'package:door_ap/common/resources/my_assets.dart';
+import 'package:door_ap/common/resources/my_colors.dart';
+import 'package:door_ap/common/resources/my_dimens.dart';
 import 'package:door_ap/common/resources/my_string.dart';
+import 'package:door_ap/common/utils/firestore_constants.dart';
 import 'package:door_ap/common/utils/my_constants.dart';
 import 'package:door_ap/common/utils/my_shared_preference.dart';
 import 'package:door_ap/customer/screen/customer_btm_screen.dart';
@@ -20,6 +25,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sn_progress_dialog/progress_dialog.dart';
 
 class LoginController extends GetxController{
 
@@ -174,11 +180,12 @@ class LoginController extends GetxController{
     MySharedPreference.setString(MyConstants.keyVendor, "True");
     MySharedPreference.setString(MyConstants.keyCustomer, "False");
 
-    if(!MySharedPreference.getBool(MyConstants.keyIsProfileCompleted)){
+    /*if(!MySharedPreference.getBool(MyConstants.keyIsProfileCompleted)){
       Navigator.pushAndRemoveUntil(Get.context!, MaterialPageRoute(builder: (context) => VendorProfileScreen()), (route) => false);
     }else{
       Navigator.pushAndRemoveUntil(Get.context!, MaterialPageRoute(builder: (context) => VendorHomeScreen()), (route) => false);
-    }
+    }*/
+    updateFirebaseUser();
   }
 
   ///*
@@ -187,7 +194,77 @@ class LoginController extends GetxController{
   navigateCustomerHome() {
     MySharedPreference.setString(MyConstants.keyVendor, "False");
     MySharedPreference.setString(MyConstants.keyCustomer, "True");
-    Navigator.pushAndRemoveUntil(Get.context!, MaterialPageRoute(builder: (context) => CustomerBtmScreen()), (route) => false);
 
+    // Navigator.pushAndRemoveUntil(Get.context!, MaterialPageRoute(builder: (context) => CustomerBtmScreen()), (route) => false);
+
+    updateFirebaseUser();
   }
+
+
+  ///*
+  ///
+  ///
+  Future<String?> getFirebaseUserData() async{
+    String? fbUserId;
+
+    //get user
+    QuerySnapshot userData = await FirebaseFirestore.instance
+        .collection('Users')
+        .where(FirestoreConstants.email, isEqualTo: MySharedPreference.getString(MyConstants.keyEmail))
+        .get();
+
+    if(userData != null){
+      for (QueryDocumentSnapshot document in userData.docs) {
+        fbUserId = document.id;
+      }
+    }
+    return fbUserId;
+  }
+
+  ///*
+  ///
+  ///
+  void updateFirebaseUser() async{
+    final ProgressDialog _progressDialog = ProgressDialog(context: Get.context);
+
+    _progressDialog.show(
+      msg: "Please wait...",
+      max: 100,
+      progressBgColor: Colors.yellow,
+      backgroundColor: MyColor.themeBlue,
+      msgColor: Colors.white,
+      msgFontSize: MyDimens.textSize18,
+      msqFontWeight: FontWeight.bold,);
+
+
+    String? fbUserId = await getFirebaseUserData();
+
+    if(fbUserId != null){
+      FirebaseFirestore.instance
+          .collection(FirestoreConstants.pathUsersCollection)
+          .doc(fbUserId)
+          .update({
+        FirestoreConstants.fcmToken  : fcmToken,
+        FirestoreConstants.isVendor  : MySharedPreference.getString(MyConstants.keyVendor),
+        FirestoreConstants.isCustomer  : MySharedPreference.getString(MyConstants.keyCustomer),
+
+      }).whenComplete(() {
+        _progressDialog.close();
+        log(tag + ' Firestore updateFirebaseUser Updated');
+
+        if(MySharedPreference.getString(MyConstants.keyVendor) == "True"){
+          if(!MySharedPreference.getBool(MyConstants.keyIsProfileCompleted)){
+            Navigator.pushAndRemoveUntil(Get.context!, MaterialPageRoute(builder: (context) => VendorProfileScreen()), (route) => false);
+          }else{
+            Navigator.pushAndRemoveUntil(Get.context!, MaterialPageRoute(builder: (context) => VendorHomeScreen()), (route) => false);
+          }
+        }else{
+
+          Navigator.pushAndRemoveUntil(Get.context!, MaterialPageRoute(builder: (context) => CustomerBtmScreen()), (route) => false);
+
+        }
+      }).catchError((onError) => log(tag + ' Firestore updateFirebaseUser Exception : ' + onError.toString()));
+    }
+  }
+
 }

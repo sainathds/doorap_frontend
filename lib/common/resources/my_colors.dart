@@ -30,6 +30,8 @@ class MyColor{
 
   static const Color greenColor = Color(0xFF299E00);
 
+  static const Color chatBlue = Color(0xFFE7F0FF);
+  static const Color chatGrey = Color(0xFFEBEBEB);
 
 
 }

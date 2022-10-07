@@ -56,33 +56,9 @@ class CustomerVendorsController extends GetxController{
               refreshPage.call();
             }
         }else{   // if error occur then msg is "Something went wrong or validation msg"
-/*
-          showDialog(
-            context: Get.context!,
-            builder: (BuildContext context1) => OKDialog(
-              title: "",
-              descriptions: responseModel.msg!,
-              img: errorImage,
-              text: '',
-              key: null,
-            ),
-          );
-*/
-
         }
       }
     }catch(exception){
-      /*log(tag + "hitShowVendorListApi Exception " + exception.toString());
-      showDialog(
-        context: Get.context!,
-        builder: (BuildContext context1) => OKDialog(
-          title: "",
-          descriptions: MyString.errorMessage!,
-          img: errorImage,
-          text: '',
-          key: null,
-        ),
-      );*/
     }
 
   }

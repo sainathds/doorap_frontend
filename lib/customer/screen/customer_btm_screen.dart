@@ -1,19 +1,28 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
+import 'package:door_ap/common/helperclass/ask_dialog.dart';
+import 'package:door_ap/common/helperclass/ok_dialog.dart';
+import 'package:door_ap/common/helperclass/permission_dialog.dart';
 import 'package:door_ap/common/network/url.dart';
 import 'package:door_ap/common/resources/my_assets.dart';
 import 'package:door_ap/common/resources/my_colors.dart';
 import 'package:door_ap/common/resources/my_dimens.dart';
 import 'package:door_ap/common/resources/my_string.dart';
+import 'package:door_ap/common/screen/chat_screen.dart';
 import 'package:door_ap/customer/controller/customer_main_controller.dart';
 import 'package:door_ap/customer/model/others/customer_address_model.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_swiper_plus/flutter_swiper_plus.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:geolocator/geolocator.dart' as geo;
+import 'package:location/location.dart' as loc;
 import 'package:get/get.dart';
 import 'package:sn_progress_dialog/progress_dialog.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import 'customer_account_screen.dart';
 import 'customer_all_category_screen.dart';
@@ -47,6 +56,11 @@ class _CustomerBtmScreenState extends State<CustomerBtmScreen> {
   bool _showSecond = false;
 
 
+  final _androidAppRetain = const MethodChannel("android_app_retain");
+  late geo.LocationPermission permission;
+  loc.Location location =  loc.Location();
+
+
   @override
   void initState() {
 
@@ -61,10 +75,8 @@ class _CustomerBtmScreenState extends State<CustomerBtmScreen> {
     });
 
     Future.delayed(Duration.zero, () async {
-      setInitialLocation();
+      checkAndRequestPermissions();
     });
-
-
 
     super.initState();
   }
@@ -79,55 +91,56 @@ class _CustomerBtmScreenState extends State<CustomerBtmScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: pages.isNotEmpty ? PageStorage(bucket: bucket, child: currentPage) : SizedBox(),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        body: pages.isNotEmpty ? PageStorage(bucket: bucket, child: currentPage) : SizedBox(),
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
 
-        items: [
-          BottomNavigationBarItem(
-              // activeIcon: Icon(Icons.home, color: MyColor.themeBlue,),
-              icon: Icon(Icons.home, color: currentPageNumber == 0 ?  MyColor.themeBlue : MyColor.fieldBorderGrey),
-              label: ""),
+          items: [
+            BottomNavigationBarItem(
+                // activeIcon: Icon(Icons.home, color: MyColor.themeBlue,),
+                icon: Icon(Icons.home, color: currentPageNumber == 0 ?  MyColor.themeBlue : MyColor.fieldBorderGrey),
+                label: ""),
 
-          BottomNavigationBarItem(
-              // activeIcon: Icon(Icons.category, color: MyColor.themeBlue,),
-              icon: Icon(Icons.category, color: currentPageNumber == 1 ? MyColor.themeBlue : MyColor.fieldBorderGrey),
-              label: ""),
+            BottomNavigationBarItem(
+                // activeIcon: Icon(Icons.category, color: MyColor.themeBlue,),
+                icon: Icon(Icons.category, color: currentPageNumber == 1 ? MyColor.themeBlue : MyColor.fieldBorderGrey),
+                label: ""),
 
-          BottomNavigationBarItem(
-              // activeIcon: Icon(Icons.reorder_sharp, color: MyColor.themeBlue,),
-              icon: Icon(Icons.reorder_sharp, color: currentPageNumber == 2 ? MyColor.themeBlue : MyColor.fieldBorderGrey),
-              label: ""),
+            BottomNavigationBarItem(
+                // activeIcon: Icon(Icons.reorder_sharp, color: MyColor.themeBlue,),
+                icon: Icon(Icons.reorder_sharp, color: currentPageNumber == 2 ? MyColor.themeBlue : MyColor.fieldBorderGrey),
+                label: ""),
 
-          BottomNavigationBarItem(
-              // activeIcon: Icon(Icons.favorite, color: MyColor.themeBlue,),
-              icon: Icon(Icons.favorite, color: currentPageNumber == 3 ? MyColor.themeBlue : MyColor.fieldBorderGrey),
-              label: ""),
+            BottomNavigationBarItem(
+                // activeIcon: Icon(Icons.favorite, color: MyColor.themeBlue,),
+                icon: Icon(Icons.favorite, color: currentPageNumber == 3 ? MyColor.themeBlue : MyColor.fieldBorderGrey),
+                label: ""),
 
-          BottomNavigationBarItem(
-              // activeIcon: Icon(Icons.person, color: MyColor.themeBlue,),
-              icon: Icon(Icons.person, color: currentPageNumber == 4 ? MyColor.themeBlue : MyColor.fieldBorderGrey),
-              label: ""),
+            BottomNavigationBarItem(
+                // activeIcon: Icon(Icons.person, color: MyColor.themeBlue,),
+                icon: Icon(Icons.person, color: currentPageNumber == 4 ? MyColor.themeBlue : MyColor.fieldBorderGrey),
+                label: ""),
 
-        ],
-        // onTap: (int index) => _showPage(index),
-
-        onTap: (int index){
-          setState(() {
-            currentPage = pages[index];
-            currentPageNumber = index;
-          });
-          if(index == 0){
-            Future.delayed(Duration.zero, () async {
-              _getXController.hitCurrentOrderApi();
+          ],
+          onTap: (int index){
+            setState(() {
+              currentPage = pages[index];
+              currentPageNumber = index;
             });
-          }
-        },
-      ),
+            if(index == 0){
+              Future.delayed(Duration.zero, () async {
+                _getXController.hitCurrentOrderApi();
+              });
+            }
+          },
+        ),
 
-      bottomSheet:
-      _getXController.currentOrderList.isNotEmpty && _customerAddressModel.latitude != 0.0 && currentPageNumber == 0 ?  showCurrentOrder() : SizedBox()
+        bottomSheet:
+        _getXController.currentOrderList.isNotEmpty && _customerAddressModel.latitude != 0.0 && currentPageNumber == 0 ?  showCurrentOrder() : const SizedBox()
+      ),
     );
   }
 
@@ -160,8 +173,8 @@ class _CustomerBtmScreenState extends State<CustomerBtmScreen> {
       msgFontSize: MyDimens.textSize18,
       msqFontWeight: FontWeight.bold,);
 
-    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
-        .then((Position position) {
+    await geo.Geolocator.getCurrentPosition(desiredAccuracy: geo.LocationAccuracy.best)
+        .then((geo.Position position) {
 
       setState(() {
         _customerAddressModel.latitude = position.latitude;
@@ -180,6 +193,18 @@ class _CustomerBtmScreenState extends State<CustomerBtmScreen> {
       });
     }).catchError((e) {
       print(e);
+      _progressDialog.close();
+      showDialog(
+        context: Get.context!,
+        builder: (BuildContext context1) => OKDialog(
+          title: "Error",
+          descriptions: e.toString(),
+          img: errorImage,
+          text: '',
+          key: null,
+        ),
+      );
+
     });
 
 
@@ -189,51 +214,6 @@ class _CustomerBtmScreenState extends State<CustomerBtmScreen> {
 
 
 
-  ///*
-  ///
-  ///
-/*
-  void getAddress() async{
-
-    try {
-      List<Placemark> placemarks = await placemarkFromCoordinates(
-          _customerAddressModel.latitude,
-          _customerAddressModel.longitude
-      );
-
-      Placemark place = placemarks[0];
-      _customerAddressModel.address = "${place.subLocality},"           //Pimple Gurav,
-          "${place.locality},"                //Pimpri-Chinchwad,
-          "${place.postalCode}";            //411061
-
-      _customerAddressModel.countryName = place.country!;
-      _customerAddressModel.city = "${place.locality}";
-      _customerAddressModel.zipCode = "${place.postalCode}";
-
-
-      log("Main Address : " + _customerAddressModel.address);
-      log("Main Country : " + _customerAddressModel.countryName);
-      log("Main City : " + _customerAddressModel.city);
-      log("Main ZipCode : " + _customerAddressModel.zipCode);
-
-
-      _progressDialog.close();
-
-      pages.clear();
-      currentPage = CustomerHomeScreen(customerAddressModel: _customerAddressModel);
-      pages.add(CustomerHomeScreen(customerAddressModel: _customerAddressModel));
-      pages.add( CustomerAllCategoryScreen(customerAddressModel: _customerAddressModel));
-      pages.add(CustomerMyOrderScreen());
-      pages.add(CustomerFavouriteScreen());
-      pages.add(CustomerAccountScreen());
-      setState(() {});
-
-    } catch (e) {
-      print(e);
-    }
-
-  }
-*/
 
 
   ///*
@@ -507,14 +487,21 @@ class _CustomerBtmScreenState extends State<CustomerBtmScreen> {
                                                       fontFamily: 'montserrat_medium'
                                                   ),),
 
-                                                Row(
-                                                  children: [
-                                                    Icon(Icons.star_outlined, color: Colors.black, size: 20.0,),
-                                                    Icon(Icons.star_outlined, color: Colors.black, size: 20.0,),
-                                                    Icon(Icons.star_outlined, color: Colors.black, size: 20.0,),
-                                                    Icon(Icons.star_outlined, color: Colors.black, size: 20.0,),
-                                                  ],
-                                                )
+                                                RatingBar.builder(
+                                                  initialRating: _getXController.currentOrderList[index].rating!,
+                                                  ignoreGestures : true,
+                                                  direction: Axis.horizontal,
+                                                  allowHalfRating: true,
+                                                  itemCount: 5,
+                                                  itemSize: 15,
+                                                  itemPadding: EdgeInsets.symmetric(horizontal: 0.0),
+                                                  itemBuilder: (context, _) => Icon(
+                                                    Icons.star,
+                                                    color: Colors.amber,
+                                                  ),
+                                                  onRatingUpdate: (rating) {
+                                                  },
+                                                ),
                                               ],
                                             ),
                                           ),
@@ -616,10 +603,20 @@ class _CustomerBtmScreenState extends State<CustomerBtmScreen> {
                                                     },
                                                     child: Image(image: locationDirectionIc, color: MyColor.themeBlue, width: 25, height: 25,)),
 
-                                                // SizedBox(width: 15,),
+                                                SizedBox(width: 15,),
 
-                                                // Image(image: messageIcon, color: MyColor.themeBlue, width: 25, height: 25),
+                                                _getXController.currentOrderList[index].orderStatus! == 'Accepted' ||
+                                                    _getXController.currentOrderList[index].orderStatus! == 'Started'?
+                                                InkWell(
+                                                    onTap: (){
+                                                      Get.to(() => ChatScreen(
+                                                        receiverId: _getXController.currentOrderList[index].fkVendorFkUserId!,
+                                                        receiverName: _getXController.currentOrderList[index].fkVendorFullName!,
+                                                        callFrom: "",
 
+                                                        ));
+                                                      },
+                                                    child: Image(image: messageIcon, color: MyColor.themeBlue, width: 25, height: 25)): SizedBox()
                                               ],
                                             )
                                           ],
@@ -655,13 +652,22 @@ class _CustomerBtmScreenState extends State<CustomerBtmScreen> {
   ///&travelmode=driving  //bind before dir_action  &dir_action=navigate
   void redirectToMap(double destiLatitude, double destiLongitude) async{
     String url ='https://www.google.com/maps/dir/?api=1&origin=${_customerAddressModel.latitude},${_customerAddressModel.longitude}&destination=$destiLatitude,$destiLongitude&travelmode=driving';
-    if (await canLaunch(url)) {
-    await launch(url);
-    } else {
-    throw 'Could not launch $url';
+    if (await launchUrl(Uri.parse(url),
+      mode: LaunchMode.externalApplication,
+    )) {
+      throw 'Could not launch $url';
     }
   }
 
+  /*void redirectToMap(double destiLatitude, double destiLongitude) async{
+    String url ='https://www.google.com/maps/dir/?api=1&origin=${_customerAddressModel.latitude},${_customerAddressModel.longitude}&destination=$destiLatitude,$destiLongitude&travelmode=driving';
+    if (await canLaunchUrlString(url)) {
+      await launchUrlString(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+*/
 
   ///*
   ///
@@ -681,5 +687,127 @@ class _CustomerBtmScreenState extends State<CustomerBtmScreen> {
     }
   }
 
+
+
+  ///*
+  ///
+  ///
+  Future<bool> _onWillPop() async{
+
+    showDialog(
+        context: Get.context!,
+        builder: (BuildContext context1) => AskDialog(
+            my_context: Get.context!,
+            msg: "Do you want to Exit ?",
+            yesFunction: yesFunction,
+            noFunction: noFunction));
+
+    return false;
+  }
+
+
+  ///*
+  ///
+  ///
+  Future<bool> yesFunction(){
+    if (Platform.isAndroid) {
+      if (Navigator.of(context).canPop()) {
+        return Future.value(true);
+      } else {
+        _androidAppRetain.invokeMethod("sendToBackground");
+        return Future.value(false);
+      }
+    } else {
+      return Future.value(true);
+    }
+
+  }
+
+
+  ///*
+  ///
+  ///
+  void noFunction(){
+    Navigator.pop(Get.context!);
+  }
+
+
+  ///*
+  ///
+  ///
+  checkAndRequestPermissions() async{
+    permission = await geo.Geolocator.checkPermission();
+    if (permission == geo.LocationPermission.denied ) {
+      permission = await geo.Geolocator.requestPermission();
+
+      if (permission == geo.LocationPermission.denied) {
+        log('Location_Permission : LocationPermission.denied');
+        showLocationPermssionDialog("denied");
+
+      }else if(permission == geo.LocationPermission.deniedForever){
+        log('Location_Permission : ' + permission.toString());
+        showLocationPermssionDialog("deniedForever");
+
+      }else if(permission == geo.LocationPermission.always || permission == geo.LocationPermission.whileInUse){
+        log('Location_Permission : ' + permission.toString());
+        checkLocationService();
+
+      }
+    }else{
+      checkLocationService();
+    }
+
+  }
+
+  ///*
+  ///
+  ///
+  void showLocationPermssionDialog(String permission) {
+    showDialog(
+        context: Get.context!,
+        builder: (BuildContext context1) => PermissionDialog(
+            my_context: Get.context!,
+            msg: "To use this App, required location permission. \n please allow location permission",
+            okFunction: permission == "deniedForever" ? checkLocationService : checkAndRequestPermissions,
+            cancelFunction: noFunction));
+
+  }
+
+
+  ///*
+  ///
+  ///
+  void checkLocationService() async{
+    bool _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        log("checkLocationService 1" + _serviceEnabled.toString() );
+        showLocationServiceDialog();
+      }else{
+        log("checkLocationService 2" + _serviceEnabled.toString() );
+        setInitialLocation();
+      }
+    }else{
+      setInitialLocation();
+
+    }
+
+  }
+
+
+  ///*
+  ///
+  ///
+  void showLocationServiceDialog() {
+    showDialog(
+        context: Get.context!,
+        builder: (BuildContext context1) => PermissionDialog(
+            my_context: Get.context!,
+            msg: "To see near by vendor you have to turn On Lcation",
+            okFunction: checkLocationService,
+            cancelFunction: noFunction));
+
+  }
 
 }

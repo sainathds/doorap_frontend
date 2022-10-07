@@ -282,11 +282,18 @@ class VendorDetails {
   String? _fkVendorFullName;
   String? _fkVendorProfileImage;
   String? _fkServiceFkCategoryCategoryName;
+  int? _fkVendorFkUserId;
 
   VendorDetails(
       {String? fkVendorFullName,
         String? fkVendorProfileImage,
-        String? fkServiceFkCategoryCategoryName}) {
+        String? fkServiceFkCategoryCategoryName,
+        int? fkVendorFkUserId}) {
+
+    if (fkVendorFkUserId != null) {
+      this._fkVendorFkUserId = fkVendorFkUserId;
+    }
+
     if (fkVendorFullName != null) {
       this._fkVendorFullName = fkVendorFullName;
     }
@@ -298,6 +305,9 @@ class VendorDetails {
     }
   }
 
+  int? get fkVendorFkUserId => _fkVendorFkUserId;
+  set fkVendorFkUserId(int? fkVendorFkUserId) =>
+      _fkVendorFkUserId = fkVendorFkUserId;
   String? get fkVendorFullName => _fkVendorFullName;
   set fkVendorFullName(String? fkVendorFullName) =>
       _fkVendorFullName = fkVendorFullName;
@@ -315,6 +325,7 @@ class VendorDetails {
     _fkVendorProfileImage = json['fk_vendor__profile_image'];
     _fkServiceFkCategoryCategoryName =
     json['fk_service__fk_category__category_name'];
+    _fkVendorFkUserId = json['fk_vendor__fk_user__id'];
   }
 
   Map<String, dynamic> toJson() {
@@ -323,6 +334,7 @@ class VendorDetails {
     data['fk_vendor__profile_image'] = this._fkVendorProfileImage;
     data['fk_service__fk_category__category_name'] =
         this._fkServiceFkCategoryCategoryName;
+    data['fk_vendor__fk_user__id'] = this._fkVendorFkUserId;
     return data;
   }
 }

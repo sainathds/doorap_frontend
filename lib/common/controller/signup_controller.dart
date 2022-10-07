@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:door_ap/common/helperclass/ask_dialog.dart';
 import 'package:door_ap/common/helperclass/customdialog.dart';
 import 'package:door_ap/common/helperclass/ok_dialog.dart';
+import 'package:door_ap/common/model/other/firestore_user_model.dart';
 import 'package:door_ap/common/model/request/get_otp_request.dart';
 import 'package:door_ap/common/model/request/signup_request.dart';
 import 'package:door_ap/common/model/response/get_otp_response.dart';
@@ -13,6 +15,7 @@ import 'package:door_ap/common/network/url.dart';
 import 'package:door_ap/common/resources/my_assets.dart';
 import 'package:door_ap/common/resources/my_string.dart';
 import 'package:door_ap/common/screen/otp_verification_screen.dart';
+import 'package:door_ap/common/utils/firestore_constants.dart';
 import 'package:door_ap/common/utils/my_constants.dart';
 import 'package:door_ap/common/utils/my_shared_preference.dart';
 import 'package:door_ap/customer/screen/customer_btm_screen.dart';
@@ -48,6 +51,11 @@ class SignupController extends GetxController{
   bool isPasswordObscure = true;
   bool isChecked = false;
 
+  bool isGoogleSignIn = false;
+  bool isFacebookSignIn = false; //later use
+  bool isAppleSignIn = false; //later use
+
+
   ///*
   ///
   ///
@@ -64,13 +72,13 @@ class SignupController extends GetxController{
       isEmailEmpty = false;
       isNameEmpty = false;
 
-    }else if(passwordEditController.text.isEmpty){
+    }else if(!isGoogleSignIn && passwordEditController.text.isEmpty){
       isPasswordEmpty = true;
       isEmailValid = false;
       isEmailEmpty = false;
       isNameEmpty = false;
 
-    }else if(passwordEditController.text.length < 6){
+    }else if(!isGoogleSignIn && passwordEditController.text.length < 6){
       isPasswordValid = true;
       isPasswordEmpty = false;
       isEmailValid = false;
@@ -102,6 +110,7 @@ class SignupController extends GetxController{
      isEmailValid = false;
      isPasswordEmpty = false;
      isPasswordValid = false;
+
   }
 
   ///*
@@ -239,6 +248,9 @@ class SignupController extends GetxController{
     requestModel.firebaseToken = MySharedPreference.getString(MyConstants.keyFcmToken);
     requestModel.isVendor = MySharedPreference.getString(MyConstants.keyVendor);
     requestModel.isCustomer = MySharedPreference.getString(MyConstants.keyCustomer);
+    // requestModel.loginId = MySharedPreference.getString(MyConstants.keyLoginId);
+    // requestModel.loginType = MySharedPreference.getString(MyConstants.keyLoginType);
+
 
     final results = await Request().requestPost(
         url: signupApi,
@@ -253,14 +265,7 @@ class SignupController extends GetxController{
           if (responseModel.payload != null) {
             MySharedPreference.setInt(MyConstants.keyUserId, responseModel.payload!.id);
             MySharedPreference.setString(MyConstants.keyAccessToken, responseModel.payload!.apiToken!.access);
-
-
-            if(MySharedPreference.getString(MyConstants.keyVendor) == "True"){
-              navigateToProfile(); //vendorProfile
-            }else{
-              navigateToCustHome();
-            }
-
+            updateFirebaseUser();
           }
         } else { // if error occur then msg is "Something went wrong or validation msg"
           showDialog(
@@ -289,6 +294,54 @@ class SignupController extends GetxController{
               key: null,
             ),
       );
+    }
+  }
+
+
+
+  ///*
+  ///
+  ///
+  Future<String?> getFirebaseUserData() async{
+    String? fbUserId;
+
+    //get user
+    QuerySnapshot userData = await FirebaseFirestore.instance
+        .collection('Users')
+        .where(FirestoreConstants.email, isEqualTo: MySharedPreference.getString(MyConstants.keyEmail))
+        .get();
+
+    if(userData != null){
+      for (QueryDocumentSnapshot document in userData.docs) {
+        fbUserId = document.id;
+      }
+    }
+    return fbUserId;
+  }
+
+  ///*
+  ///
+  ///
+  void updateFirebaseUser() async{
+    String? fbUserId = await getFirebaseUserData();
+
+    if(fbUserId != null){
+      FirebaseFirestore.instance
+          .collection(FirestoreConstants.pathUsersCollection)
+          .doc(fbUserId)
+          .update({
+        FirestoreConstants.fcmToken  : MySharedPreference.getString(MyConstants.keyFcmToken),
+        FirestoreConstants.isVendor  : MySharedPreference.getString(MyConstants.keyVendor),
+        FirestoreConstants.isCustomer  : MySharedPreference.getString(MyConstants.keyCustomer),
+
+      }).whenComplete(() {
+        log(tag + ' Firestore updateFirebaseUser Updated');
+        if(MySharedPreference.getString(MyConstants.keyVendor) == "True"){
+          navigateToProfile(); //vendorProfile
+        }else{
+          navigateToCustHome();
+        }
+      }).catchError((onError) => log(tag + ' Firestore updateFirebaseUser Exception : ' + onError.toString()));
     }
   }
 

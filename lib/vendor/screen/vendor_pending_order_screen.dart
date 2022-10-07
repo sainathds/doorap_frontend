@@ -361,14 +361,33 @@ class _VendorPendingOrderScreenState extends State<VendorPendingOrderScreen> {
 
   ///*
   ///
+  ///&travelmode=driving  //bind before dir_action  &dir_action=navigate
   void redirectToMap(double destiLatitude, double destiLongitude) async{
-    String url ='https://www.google.com/maps/dir/?api=1&origin=${widget.vendorLatitude},${widget.vendorLongitude}&destination=$destiLatitude,$destiLongitude&travelmode=driving';
+    String url =
+        'https://www.google.com/maps/dir/?api=1&origin=${widget.vendorLatitude},${widget.vendorLongitude}&destination=$destiLatitude,$destiLongitude&travelmode=driving';
+    if (await launchUrl(Uri.parse(url),
+      mode: LaunchMode.externalApplication,
+    )) {
+      throw 'Could not launch $url';
+    }
+  }
+
+
+  ///*
+  ///
+/*
+  void redirectToMap(double destiLatitude, double destiLongitude) async{
+    String url = 'https://www.google.com/maps/dir/?api=1&origin=${widget.vendorLatitude},${widget.vendorLongitude}&destination=$destiLatitude,$destiLongitude&travelmode=driving';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
       throw 'Could not launch $url';
     }
   }
+*/
+
+
+
 
   ///*
   ///

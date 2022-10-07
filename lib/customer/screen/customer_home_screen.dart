@@ -8,6 +8,7 @@ import 'package:door_ap/common/resources/my_colors.dart';
 import 'package:door_ap/common/resources/my_dimens.dart';
 import 'package:door_ap/common/resources/my_string.dart';
 import 'package:door_ap/common/screen/chat_screen.dart';
+import 'package:door_ap/common/screen/notification_list_screen.dart';
 import 'package:door_ap/common/utils/global_data.dart';
 import 'package:door_ap/customer/controller/customer_home_controller.dart';
 import 'package:door_ap/customer/model/others/customer_address_model.dart';
@@ -43,6 +44,10 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
     _getXController.categoriesData.clear();
     _getXController.bannerData.clear();
     _getXController.refreshPage = refreshPage;
+
+    Future.delayed(Duration.zero, () async {
+      _getXController.hitNotificationCountApi();
+    });
 
     Future.delayed(Duration.zero, () async {
       _getXController.hitCategoriesApi();
@@ -93,15 +98,18 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
           ),
           actions: [
 
-            cartIconWidget(),
 
-            Padding(
-              padding: EdgeInsets.only(right: 20.0),
-              child: Icon(
-                Icons.notifications_none_rounded,
-                color: MyColor.themeBlue,
-              ),
-            )
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                cartIconWidget(),
+
+                notificationCountWidget(),
+
+              ],
+            ),
+
+
           ],
         ),
         body: Padding(
@@ -370,15 +378,14 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
               ),
               InkWell(
                 onTap: () async {
-                  /*var nav =  await Get.to(
+                  var nav =  await Get.to(
                       CustomerAllCategoryScreen(
                           customerAddressModel: widget.customerAddressModel!));
 
                   if (nav == null) {
                     setState(() {});
-                  }*/
+                  }
 
-                  Get.to(() => ChatScreen());
                 },
                 child: Text(
                   MyString.seeAll!,
@@ -543,33 +550,57 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
 
   ///*
   ///
-  /// flutter_stripe_payment: ^0.0.17
-/*
-  void stripePaymentIntegartion() async{
-    final _stripePayment = FlutterStripePayment();
-    _stripePayment.onCancel = (){
-      print("User Cancelled the Payment Method Form");
-    };
+  ///
+  Widget notificationCountWidget() {
+    return InkWell(
+      onTap: () async{
+        var nav = await Get.to(() => NotificationListScreen(userType: 'Customer',));
+        if(nav == null){
+          _getXController.hitNotificationCountApi();
+        }
+      },
+      child: Container(
+        width: 50,
+        child: Stack(
+          children: [
+            Positioned(
+              top: 0,
+              bottom: 0,
+              left: 5,
+              child: Icon(
+                Icons.notifications_none_rounded,
+                color: MyColor.themeBlue,
+              ),
+            ),
 
+            _getXController.notificationCount != 0?
+            Positioned(
+              top: 10,
+              right: 15,
+              child: Container(
+                height: 18,
+                width: 18,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: MyColor.orangeColor,
+                  borderRadius: BorderRadius.circular(9.0),
+                ),
+                child: Text(
+                  _getXController.notificationCount.toString(),
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontFamily: 'roboto_bold',
+                      fontSize: MyDimens.textSize10),
+                ),
+              ),
+            ):
+            SizedBox()
+          ],
+        ),
+      ),
+    );
 
-    //The below code connects the application with your Stripe account,
-    // and therefore, all payments made by this app will be received in your account,
-    // which you can keep track of in the Stripe dashboard.
-    _stripePayment.setStripeSettings(
-        MyString.stripePublishableKey,
-        */
-/*MyString.applePayMerchantId*//*
-);
-
-
-    //Show Payment Form
-    var paymentResponse = await _stripePayment.addPaymentMethod();
-    if(paymentResponse.status == PaymentResponseStatus.succeeded)
-    {
-      print(paymentResponse.paymentMethodId);
-    }
   }
-*/
 
 
 

@@ -50,6 +50,7 @@ class Payload {
   String? _fkCustomerName;
   String? _orderId;
   int? _fkVendor;
+  int? _fkVendorFkUserId;
   String? _fkVendorFullName;
   String? _bookingDate;
   double? _totalAmount;
@@ -63,6 +64,7 @@ class Payload {
         String? fkCustomerName,
         String? orderId,
         int? fkVendor,
+        int? fkVendorFkUserId,
         String? fkVendorFullName,
         String? bookingDate,
         double? totalAmount,
@@ -83,6 +85,9 @@ class Payload {
     }
     if (fkVendor != null) {
       this._fkVendor = fkVendor;
+    }
+    if (fkVendorFkUserId != null) {
+      this._fkVendorFkUserId = fkVendorFkUserId;
     }
     if (fkVendorFullName != null) {
       this._fkVendorFullName = fkVendorFullName;
@@ -115,6 +120,9 @@ class Payload {
   set orderId(String? orderId) => _orderId = orderId;
   int? get fkVendor => _fkVendor;
   set fkVendor(int? fkVendor) => _fkVendor = fkVendor;
+  int? get fkVendorFkUserId => _fkVendorFkUserId;
+  set fkVendorFkUserId(int? fkVendorFkUserId) =>
+      _fkVendorFkUserId = fkVendorFkUserId;
   String? get fkVendorFullName => _fkVendorFullName;
   set fkVendorFullName(String? fkVendorFullName) =>
       _fkVendorFullName = fkVendorFullName;
@@ -135,6 +143,7 @@ class Payload {
     _fkCustomerName = json['fk_customer__name'];
     _orderId = json['order_id'];
     _fkVendor = json['fk_vendor'];
+    _fkVendorFkUserId = json['fk_vendor__fk_user__id'];
     _fkVendorFullName = json['fk_vendor__full_name'];
     _bookingDate = json['booking_date'];
     _totalAmount = json['total_amount'];
@@ -156,6 +165,7 @@ class Payload {
     data['order_status'] = this._orderStatus;
     data['booking_start_time'] = this._bookingStartTime;
     data['quantity'] = this._quantity;
+    data['fk_vendor__fk_user__id'] = this._fkVendorFkUserId;
     return data;
   }
 }

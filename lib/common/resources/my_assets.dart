@@ -65,6 +65,11 @@ var mapPinIc =  const AssetImage('assets/images/map_pin_ic.png');
 
 var declineIc =  const AssetImage('assets/images/sorry_decline_ic.png');
 
+var msgRead =  const AssetImage('assets/images/double_check.png');
 
 
+var emptyNotification =  const AssetImage('assets/images/empty_notification_grey.png');
+var seenNotification =  const AssetImage('assets/images/seen_notification.png');
+var unseenNotification =  const AssetImage('assets/images/unseen_notification.png');
 
+var paymentImg =  const AssetImage('assets/images/payment_img.png');

@@ -269,6 +269,7 @@ class _CustomerBookSlotScreenState extends State<CustomerBookSlotScreen>
                             _getXController.currentDateIndex = index;
                             _getXController.timeEditController.clear();
                             _getXController.isTimeInValid = false;
+                            _getXController.isSelectPreviousTime = false;
                           });
                         }),
                   ),
@@ -411,7 +412,7 @@ class _CustomerBookSlotScreenState extends State<CustomerBookSlotScreen>
                           controller: _getXController.timeEditController,
                           decoration: InputDecoration(
                             hintText: 'Enter time',
-                            errorText: _getXController.isTimeEmpty? 'please enter time' :  _getXController.isTimeInValid ? 'vendor not available' : null,
+                            errorText: _getXController.isTimeEmpty? 'please enter time' :  _getXController.isTimeInValid ? 'vendor not available' : _getXController.isSelectPreviousTime ? "Please select the valid time" : null,
                             focusColor: Colors.red,
                             border: OutlineInputBorder(),
                             contentPadding:
@@ -429,6 +430,7 @@ class _CustomerBookSlotScreenState extends State<CustomerBookSlotScreen>
                             setState(() {
                               _getXController.isTimeEmpty = false;
                               _getXController.isTimeInValid = false;
+                              _getXController.isSelectPreviousTime = false;
                             });
                             selectTime(context, _getXController.timeEditController );
                           },
@@ -579,7 +581,7 @@ class _CustomerBookSlotScreenState extends State<CustomerBookSlotScreen>
     if(nowDateString == _getXController.data[_getXController.currentDateIndex].date!){
       if(time.isBefore(nowDateTime)){
         log('Availability : false' );
-        _getXController.isTimeInValid = true;
+        _getXController.isSelectPreviousTime = true;
         refreshPage();
 
       }else if(time == fromTime || (time.isAfter(fromTime) && time.isBefore(toTime))){
@@ -591,6 +593,7 @@ class _CustomerBookSlotScreenState extends State<CustomerBookSlotScreen>
             log('Availability : time.isBefore(slotFromTime) ' + time.isBefore(slotFromTime).toString() );
             log('Availability : time.isAfter(slotToTime) ' + time.isAfter(slotToTime).toString());
             _getXController.isTimeInValid = false;
+            _getXController.isSelectPreviousTime= false;
             refreshPage();
 
           }else{
@@ -615,6 +618,8 @@ class _CustomerBookSlotScreenState extends State<CustomerBookSlotScreen>
           log('Availability : time.isBefore(slotFromTime) ' + time.isBefore(slotFromTime).toString() );
           log('Availability : time.isAfter(slotToTime) ' + time.isAfter(slotToTime).toString());
           _getXController.isTimeInValid = false;
+          _getXController.isSelectPreviousTime = false;
+
           refreshPage();
 
         }else{

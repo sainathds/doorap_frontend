@@ -1,17 +1,28 @@
 import 'dart:developer';
+import 'dart:io';
 
+import 'package:door_ap/common/helperclass/ask_dialog.dart';
+import 'package:door_ap/common/helperclass/ok_dialog.dart';
+import 'package:door_ap/common/helperclass/permission_dialog.dart';
 import 'package:door_ap/common/resources/my_assets.dart';
 import 'package:door_ap/common/resources/my_colors.dart';
 import 'package:door_ap/common/resources/my_dimens.dart';
+import 'package:door_ap/common/resources/my_string.dart';
+import 'package:door_ap/common/screen/chat_screen.dart';
 import 'package:door_ap/common/utils/my_constants.dart';
 import 'package:door_ap/common/utils/my_shared_preference.dart';
 import 'package:door_ap/vendor/controller/vendor_home_controller.dart';
 import 'package:door_ap/vendor/screen/vendor_accepted_order_screen.dart';
 import 'package:door_ap/vendor/screen/vendor_categories_screen.dart';
+import 'package:door_ap/common/screen/notification_list_screen.dart';
 import 'package:door_ap/vendor/screen/vendor_pending_order_screen.dart';
 import 'package:door_ap/vendor/screen/vendor_side_nav_drawer.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart' as geo;
+import 'package:location/location.dart' as loc;
+
 import 'package:get/get.dart';
 import 'package:http/http.dart';
 import 'package:sn_progress_dialog/progress_dialog.dart';
@@ -28,6 +39,10 @@ class _VendorHomeScreenState extends State<VendorHomeScreen> with WidgetsBinding
   VendorHomeController _getXController = Get.put(VendorHomeController());
   bool _showSecond = false;
   late ProgressDialog _progressDialog;
+  final _androidAppRetain = const MethodChannel("android_app_retain");
+  late geo.LocationPermission permission;
+  loc.Location location =  loc.Location();
+
 
   @override
   void initState() {
@@ -36,15 +51,18 @@ class _VendorHomeScreenState extends State<VendorHomeScreen> with WidgetsBinding
     _getXController.payload = null;
     _getXController.refreshPage = refreshPage;
     Future.delayed(Duration.zero, () async {
-      _getXController.hitCurrentOrderApi();
-    });
-    Future.delayed(Duration.zero, () async {
-      _getXController.hitViewProfileApi();
+      _getXController.hitNotificationCountApi();
     });
 
     Future.delayed(Duration.zero, () async {
-      setInitialLocation();
+      _getXController.hitCurrentOrderApi();
     });
+
+    Future.delayed(Duration.zero, () async {
+      checkAndRequestPermissions();
+    });
+
+    testEncryptionAndDecryption(); //rough use
 
     WidgetsBinding.instance!.addObserver(this);
     super.initState();
@@ -68,86 +86,103 @@ class _VendorHomeScreenState extends State<VendorHomeScreen> with WidgetsBinding
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        endDrawer: VendorSideNavDrawer(profileData: _getXController.payload, getXController: _getXController),
-        appBar: PreferredSize(
-          preferredSize: Size.fromHeight(70.0),
-          child: AppBar(
-            // leadingWidth: MediaQuery.of(context).size.width,
-            title: Row(
-              children: [
-                Image(
-                  image: homeLocIcon,
-                  height: 25.0,
-                  width: 25.0,
-                ),
-                SizedBox(
-                  width: 5.0,
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        _getXController.cityName,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: MyDimens.textSize13,
-                          fontFamily: "montserrat_medium",
-                        ),
-                        textAlign: TextAlign.left,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 3.0),
-                        child: Text(
-                          _getXController.fullAddress,
-                          maxLines: 1,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: MyDimens.textSize12,
-                            fontFamily: "montserrat_regular",
+      child: WillPopScope(
+        onWillPop: _onWillPop,
+        child: Scaffold(
+          endDrawer: VendorSideNavDrawer(profileData: _getXController.payload, getXController: _getXController),
+          appBar: PreferredSize(
+            preferredSize: Size.fromHeight(70.0),
+            child: AppBar(
+              titleSpacing: 0,
+              title: Padding(
+                padding: const EdgeInsets.only(left: 20.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Image(
+                            image: homeLocIcon,
+                            height: 25.0,
+                            width: 25.0,
                           ),
-                          textAlign: TextAlign.left,
-                        ),
+                          SizedBox(
+                            width: 5.0,
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _getXController.cityName,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: MyDimens.textSize13,
+                                    fontFamily: "montserrat_medium",
+                                  ),
+                                  textAlign: TextAlign.left,
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(top: 3.0),
+                                  child: Text(
+                                    _getXController.fullAddress,
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: MyDimens.textSize12,
+                                      fontFamily: "montserrat_regular",
+                                    ),
+                                    textAlign: TextAlign.left,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+
+                    notificationCountWidget()
+
+                  ],
                 ),
-              ],
+              ),
+              elevation: 0,
+              backgroundColor: MyColor.themeBlue,
             ),
-            elevation: 0,
-            backgroundColor: MyColor.themeBlue,
           ),
-        ),
-        bottomSheet: _getXController.isServiceCreated! && _getXController.currentOrderList.isNotEmpty &&
-                _getXController.latitude != 0.0
-            ? showCurrentOrder()
-            : SizedBox(),
-        body: Container(
-          height: MediaQuery.of(context).size.height,
-          color: MyColor.themeBlue,
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(15.0),
-                  topLeft: Radius.circular(15.0)),
-              color: Colors.white,
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+          bottomSheet: _getXController.isServiceCreated! && _getXController.currentOrderList.isNotEmpty &&
+                  _getXController.latitude != 0.0
+              ? showCurrentOrder()
+              : SizedBox(),
+          body: Container(
+            height: MediaQuery.of(context).size.height,
+            color: MyColor.themeBlue,
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              decoration: const BoxDecoration(
+                borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(15.0),
+                    topLeft: Radius.circular(15.0)),
+                color: Colors.white,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
 
-                _getXController.payload == null
-                    ? const SizedBox()
-                    :_getXController.isApproved! == "false"
-                    ? notApprovedContainer()
-                    : !_getXController.isServiceCreated!
-                    ?  createServiceContainer()
-                    : _getXController.latitude  != 0.0?  Expanded(child: customTabWidget()) : SizedBox()
+                  _getXController.payload == null
+                      ? const SizedBox()
+                      :_getXController.isApproved! == "false"
+                      ? notApprovedContainer()
+                      : !_getXController.isServiceCreated!
+                      ?  createServiceContainer()
+                      : _getXController.latitude  != 0.0?  Expanded(child: customTabWidget()) : SizedBox()
 
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -259,12 +294,6 @@ class _VendorHomeScreenState extends State<VendorHomeScreen> with WidgetsBinding
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Container(
-                  //   margin: EdgeInsets.all(20),
-                  //   width: MediaQuery.of(context).size.width * 0.5,
-                  //   height: 3,
-                  //   color: Colors.white,
-                  // ),
                   Padding(
                     padding: const EdgeInsets.only(
                         left: 18.0, top: 10.0, bottom:10, right: 20),
@@ -562,9 +591,18 @@ class _VendorHomeScreenState extends State<VendorHomeScreen> with WidgetsBinding
                                               height: 25,
                                             )),
 
-                                        // SizedBox(width: 15,),
+                                        SizedBox(width: 15,),
 
-                                        // Image(image: messageIcon, color: MyColor.themeBlue, width: 25, height: 25),
+                                        InkWell(
+                                            onTap: (){
+                                              Get.to(() => ChatScreen(
+                                                  receiverId: _getXController.currentOrderList[index].fkCustomer!,
+                                                  receiverName: _getXController.currentOrderList[index].fkCustomerName!,
+                                                  callFrom: "",));
+
+                                            },
+                                            child: Image(image: messageIcon, color: MyColor.themeBlue, width: 25, height: 25)),
+
                                       ],
                                     )
                                   ],
@@ -588,10 +626,25 @@ class _VendorHomeScreenState extends State<VendorHomeScreen> with WidgetsBinding
     );
   }
 
+
   ///*
   ///
   ///&travelmode=driving  //bind before dir_action  &dir_action=navigate
-  void redirectToMap(double destiLatitude, double destiLongitude) async {
+  void redirectToMap(double destiLatitude, double destiLongitude) async{
+    String url =
+        'https://www.google.com/maps/dir/?api=1&origin=${_getXController.latitude},${_getXController.longitude}&destination=$destiLatitude,$destiLongitude&travelmode=driving';
+    if (await launchUrl(Uri.parse(url),
+      mode: LaunchMode.externalApplication,
+    )) {
+      throw 'Could not launch $url';
+    }
+  }
+
+
+  ///*
+  ///
+  ///&travelmode=driving  //bind before dir_action  &dir_action=navigate
+  /*void redirectToMap(double destiLatitude, double destiLongitude) async {
     String url =
         'https://www.google.com/maps/dir/?api=1&origin=${_getXController.latitude},${_getXController.longitude}&destination=$destiLatitude,$destiLongitude&travelmode=driving';
     if (await canLaunch(url)) {
@@ -600,7 +653,7 @@ class _VendorHomeScreenState extends State<VendorHomeScreen> with WidgetsBinding
       throw 'Could not launch $url';
     }
   }
-
+*/
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     // TODO: implement didChangeAppLifecycleState
@@ -669,6 +722,106 @@ class _VendorHomeScreenState extends State<VendorHomeScreen> with WidgetsBinding
   }
 
 
+
+
+  ///*
+  ///
+  ///
+  Widget notificationCountWidget() {
+    return InkWell(
+      onTap: () async{
+       var nav = await Get.to(() => NotificationListScreen(userType: 'Vendor',));
+       if(nav == null){
+         _getXController.hitNotificationCountApi();
+       }
+      },
+      child: Container(
+        width: 40,
+        height: 70,
+        child: Stack(
+          children: [
+            Positioned(
+              top: 0,
+              bottom: 0,
+              left: 5,
+              child: Icon(
+                Icons.notifications_none_rounded,
+                color: Colors.white,
+              ),
+            ),
+
+            _getXController.notificationCount != 0?
+            Positioned(
+              top: 15,
+              right: 7,
+              child: Container(
+                height: 18,
+                width: 18,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: MyColor.orangeColor,
+                  borderRadius: BorderRadius.circular(9.0),
+                ),
+                child: Text(
+                  _getXController.notificationCount.toString(),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontFamily: 'roboto_bold',
+                      fontSize: MyDimens.textSize10),
+                ),
+              ),
+            ):
+            SizedBox()
+          ],
+        ),
+      ),
+    );
+
+  }
+
+  ///*
+  ///
+  ///
+  Future<bool> _onWillPop() async{
+
+    showDialog(
+        context: Get.context!,
+        builder: (BuildContext context1) => AskDialog(
+            my_context: Get.context!,
+            msg: "Do you want to Exit ?",
+            yesFunction: yesFunction,
+            noFunction: noFunction));
+
+    return false;
+  }
+
+
+  ///*
+  ///
+  ///
+  Future<bool> yesFunction(){
+    if (Platform.isAndroid) {
+      if (Navigator.of(context).canPop()) {
+        return Future.value(true);
+      } else {
+        _androidAppRetain.invokeMethod("sendToBackground");
+        return Future.value(false);
+      }
+    } else {
+      return Future.value(true);
+    }
+
+  }
+
+
+  ///*
+  ///
+  ///
+  void noFunction(){
+    Navigator.pop(Get.context!);
+  }
+
+
   ///*
   ///
   ///
@@ -683,8 +836,9 @@ class _VendorHomeScreenState extends State<VendorHomeScreen> with WidgetsBinding
       msgFontSize: MyDimens.textSize18,
       msqFontWeight: FontWeight.bold,);
 
-    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
-        .then((Position position) {
+
+    await geo.Geolocator.getCurrentPosition(desiredAccuracy: geo.LocationAccuracy.best)
+        .then((geo.Position position) {
 
       setState(() {
         _getXController.latitude = position.latitude;
@@ -692,13 +846,128 @@ class _VendorHomeScreenState extends State<VendorHomeScreen> with WidgetsBinding
       });
 
       _progressDialog.close();
+
+      Future.delayed(Duration.zero, () async {
+        _getXController.hitViewProfileApi();
+      });
+
     }).catchError((e) {
       print(e);
+      _progressDialog.close();
+      showDialog(
+        context: Get.context!,
+        builder: (BuildContext context1) => OKDialog(
+          title: "Error",
+          descriptions: e.toString(),
+          img: errorImage,
+          text: '',
+          key: null,
+        ),
+      );
+
     });
+  }
 
 
+
+  ///*
+  ///
+  ///
+  checkAndRequestPermissions() async{
+    permission = await geo.Geolocator.checkPermission();
+    if (permission == geo.LocationPermission.denied ) {
+      permission = await geo.Geolocator.requestPermission();
+
+      if (permission == geo.LocationPermission.denied) {
+        log('Location_Permission : LocationPermission.denied');
+        showLocationPermssionDialog("denied");
+
+      }else if(permission == geo.LocationPermission.deniedForever){
+        log('Location_Permission : ' + permission.toString());
+        showLocationPermssionDialog("deniedForever");
+
+      }else if(permission == geo.LocationPermission.always || permission == geo.LocationPermission.whileInUse){
+        log('Location_Permission : ' + permission.toString());
+        checkLocationService();
+
+      }
+    }else{
+      checkLocationService();
+    }
 
   }
+
+  ///*
+  ///
+  ///
+  void showLocationPermssionDialog(String permission) {
+    showDialog(
+        context: Get.context!,
+        builder: (BuildContext context1) => PermissionDialog(
+            my_context: Get.context!,
+            msg: "To use this App, required location permission. \n please allow location permission",
+            okFunction: permission == "deniedForever" ? checkLocationService : checkAndRequestPermissions,
+            cancelFunction: noFunction));
+
+  }
+
+
+  ///*
+  ///
+  ///
+  void checkLocationService() async{
+    bool _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        log("checkLocationService 1" + _serviceEnabled.toString() );
+        showLocationServiceDialog();
+      }else{
+        log("checkLocationService 2" + _serviceEnabled.toString() );
+        setInitialLocation();
+      }
+    }else{
+      setInitialLocation();
+
+    }
+
+  }
+
+
+  ///*
+  ///
+  ///
+  void showLocationServiceDialog() {
+    showDialog(
+        context: Get.context!,
+        builder: (BuildContext context1) => PermissionDialog(
+            my_context: Get.context!,
+            msg: "To access your current location please turn on location.",
+            okFunction: checkLocationService,
+            cancelFunction: noFunction));
+
+  }
+
+  ///*
+  ///
+  ///
+  void testEncryptionAndDecryption() {
+    final plainText = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit';
+    final key = encrypt.Key.fromUtf8(MyString.key32Length);
+    final iv = encrypt.IV.fromLength(16);
+
+    final encrypter = encrypt.Encrypter(encrypt.AES(key));
+
+    final encrypted = encrypter.encrypt(plainText, iv: iv);
+    final decrypted = encrypter.decrypt(encrypted, iv: iv);
+
+    log("testEncryptionAndDecryption Decrypted " + decrypted); // Lorem ipsum dolor sit amet, consectetur adipiscing elit
+    log("testEncryptionAndDecryption Encrypted " + encrypted.base64); // R4PxiU3h8YoIRqVowBXm36ZcCeNeZ4s1OvVBTfFlZRdmohQqOpPQqD1YecJeZMAop/hZ4OxqgC1WtwvX/hP9mw==
+
+  }
+
+
+
 
 
 }

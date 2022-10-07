@@ -1,7 +1,13 @@
+import 'package:door_ap/common/network/url.dart';
 import 'package:flutter/cupertino.dart';
 
 class MyString{
-  static const String googleApiKey = "AIzaSyCu9LulO4NqXIg9f7eG3RjlpFq1d_D5FAY";
+
+  static const String firebaseServerToken =  'AAAAkmWW0vg:APA91bGcSLvDBl1IpdJ98UJ8aj7bE_kj2kclBvHs6pSpbHeIH9-SkXVMtJ6Nh5wENUmDOaKIBW-gvSqRdj8p7mCdLqI8vfIO9RfucKeUKBM-Xx6IXLWvisBBSLwOP6bgFmXLK9WNOL7y';
+
+  static const String googleApiKey = "AIzaSyCVFllfHUhHvKxAMepxcA-72zEoFiOITVk";
+
+
 
   //stripe_PublishableKey use for android
   static const String stripePublishableKey = 'pk_test_51LHr4UI0Jl0TyufYNLhbmQShj2vhewUmVOsdTQQlC1vbsx7C5BxDJURoztL3YinNTwivmkuR1MUcMqPiNCVS7ceO00Jky7DbcI'; //test key
@@ -14,6 +20,12 @@ class MyString{
   //stripe_MerchantID user for apple
   static const String applePayMerchantId = '';
 
+  static const String privacyPolicyUrl = '${baseUrl}privacy_policy/';
+  static const String termsOfServiceUrl = '${baseUrl}terms_of_service/';
+  static const String refundPolicyUrl = '${baseUrl}refund_policy/';
+
+
+  static const String key32Length = "qwertyuioplkjhgfdsazxcvbnmpoiuyv";
 
   static const String? doorap = "Doorap";
   static const String? errorMessage =  "Something went wrong, Please try later";

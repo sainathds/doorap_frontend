@@ -389,7 +389,8 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
 
   ///*
   /// Location Field
-  Widget locationField() {
+  Widget
+  locationField() {
     return TextFormField(
       readOnly: true,
       onTap: () {

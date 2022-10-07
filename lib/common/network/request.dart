@@ -899,4 +899,84 @@ class Request{
     }
   }
 
+
+
+  ///*
+  ///
+  ///
+  Future<Map?> requestSendPushNotification({required String url, required String parameters, context}) async {
+
+    log("API :" + url);
+    log("RequestBody :" + parameters);
+    bool flagNet = await MyInternetConnection().isInternetAvailable();
+
+    if (flagNet) {
+      try{
+        Uri uri = Uri.parse(url);
+        final results = await http.post(uri,
+            body: parameters,
+            headers:
+            {
+              "Content-Type": "application/json",
+              "Authorization": "key = ${MyString.firebaseServerToken}"
+            });
+
+        if (results.statusCode == 200) {
+
+          log("requestSendPushNotification RequestBody :" + results.body);
+          final jsonObject = json.decode(utf8.decode(results.bodyBytes));
+          log("requestSendPushNotification Response :" + jsonObject.toString());
+          return jsonObject;
+
+        } else{
+          log("Request API : null ");
+
+          /*showDialog(
+            context: context,
+            builder: (BuildContext context1) => OKDialog(
+              title: "",
+              descriptions: MyString.errorMessage!,
+              img: errorImage,
+              text: '',
+              key: null,
+            ),
+          );*/
+          return null;
+
+        }
+
+      }catch(exception){
+        log("Request API Exception: " + exception.toString());
+        /*showDialog(
+          context: context,
+          builder: (BuildContext context1) => OKDialog(
+            title: "",
+            descriptions: MyString.errorMessage!,
+            img: errorImage,
+            text: '',
+            key: null,
+          ),
+        );*/
+        return null;
+
+      }
+
+    } else {
+      log("Request API : No Net ");
+
+      /*showDialog(
+        context: context,
+        builder: (BuildContext context1) => OKDialog(
+          title: "",
+          descriptions: "Please check Internet Connection",
+          img: noInternetImage,
+          text: '',
+          key: null,
+        ),
+      );*/
+      return null;
+    }
+
+  }
+
 }

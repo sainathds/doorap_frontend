@@ -1,6 +1,7 @@
 import 'package:door_ap/common/resources/my_assets.dart';
 import 'package:door_ap/common/resources/my_colors.dart';
 import 'package:door_ap/common/resources/my_dimens.dart';
+import 'package:door_ap/common/screen/chat_screen.dart';
 import 'package:door_ap/common/utils/my_constants.dart';
 import 'package:door_ap/common/utils/my_shared_preference.dart';
 import 'package:door_ap/vendor/controller/vendor_accept_order_controller.dart';
@@ -262,9 +263,15 @@ class _VendorAcceptedOrderScreenState extends State<VendorAcceptedOrderScreen> {
                                             },
                                             child: Image(image: locationDirectionIc, color: MyColor.themeBlue, width: 25, height: 25,)),
 
-                                        // SizedBox(width: 15,),
+                                        SizedBox(width: 15,),
 
-                                        // Image(image: messageIcon, color: MyColor.themeBlue, width: 25, height: 25),
+                                        InkWell(
+                                             onTap: (){
+                                               Get.to(() => ChatScreen(receiverId: _getXController.acceptedOrderList[index].fkCustomer!,
+                                                                       receiverName: _getXController.acceptedOrderList[index].fkCustomerName!,
+                                                                       callFrom: "",));
+                                             },
+                                            child: Image(image: messageIcon, color: MyColor.themeBlue, width: 25, height: 25)),
 
                                       ],
                                     )
@@ -356,16 +363,29 @@ class _VendorAcceptedOrderScreenState extends State<VendorAcceptedOrderScreen> {
     );
   }
 
+  ///*
+  ///
+  ///&travelmode=driving  //bind before dir_action  &dir_action=navigate
+  void redirectToMap(double destiLatitude, double destiLongitude) async{
+    String url =
+        'https://www.google.com/maps/dir/?api=1&origin=${widget.vendorLatitude},${widget.vendorLongitude}&destination=$destiLatitude,$destiLongitude&travelmode=driving';
+    if (await launchUrl(Uri.parse(url),
+      mode: LaunchMode.externalApplication,
+    )) {
+      throw 'Could not launch $url';
+    }
+  }
+
 
   ///*
   ///
-  void redirectToMap(double destiLatitude, double destiLongitude) async{
-    String url ='https://www.google.com/maps/dir/?api=1&origin=${widget.vendorLatitude},${widget.vendorLongitude}&destination=$destiLatitude,$destiLongitude&travelmode=driving';
+/*  void redirectToMap(double destiLatitude, double destiLongitude) async{
+    String url = 'https://www.google.com/maps/dir/?api=1&origin=${widget.vendorLatitude},${widget.vendorLongitude}&destination=$destiLatitude,$destiLongitude&travelmode=driving';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
       throw 'Could not launch $url';
     }
-  }
+  }*/
 
 }

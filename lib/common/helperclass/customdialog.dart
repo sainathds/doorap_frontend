@@ -8,19 +8,17 @@ import 'package:flutter/material.dart';
 
 class CustomDialog extends StatelessWidget {
   final String title, description, buttonText;
-  // final String? icon;
-  //   final Image? image;
   final BuildContext my_context;
   BuildContext? dialog_context;
   Function okBtnFunction;
   final AssetImage img;
+
   CustomDialog({
     required this.title,
     required this.description,
     required this.buttonText,
     required this.img,
     required this.okBtnFunction,
-    // this.image,
     required this.my_context,
   });
 

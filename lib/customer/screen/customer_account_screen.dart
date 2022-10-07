@@ -1,9 +1,15 @@
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:door_ap/common/helperclass/ask_dialog.dart';
 import 'package:door_ap/common/resources/my_colors.dart';
 import 'package:door_ap/common/resources/my_dimens.dart';
 import 'package:door_ap/common/resources/my_string.dart';
 import 'package:door_ap/common/screen/change_password_screen.dart';
 import 'package:door_ap/common/screen/login_screen.dart';
+import 'package:door_ap/common/screen/recent_chat_list_screen.dart';
+import 'package:door_ap/common/screen/test_recent_chat.dart';
+import 'package:door_ap/common/utils/firestore_constants.dart';
 import 'package:door_ap/common/utils/my_constants.dart';
 import 'package:door_ap/common/utils/my_shared_preference.dart';
 import 'package:door_ap/customer/controller/customer_account_controller.dart';
@@ -11,6 +17,7 @@ import 'package:door_ap/customer/screen/customer_my_order_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class CustomerAccountScreen extends StatefulWidget {
   const CustomerAccountScreen({Key? key}) : super(key: key);
@@ -23,6 +30,7 @@ class _CustomerAccountScreenState extends State<CustomerAccountScreen> {
 
   CustomerAccountController _getXController = Get.put(CustomerAccountController());
 
+  String tag = 'CustomerAccountScreen';
 
   @override
   void initState() {
@@ -80,14 +88,17 @@ class _CustomerAccountScreenState extends State<CustomerAccountScreen> {
                         ),
                       ),
 
-                      /*Padding(
+                      Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
                         child: ListTile(
                           trailing: Icon(Icons.arrow_forward_ios_outlined, size: 15,),
-                          title: Text(MyString.myWishlist!, style: menuStyle()),
-                          // onTap: () => Navigator.pop(context),
+                          title: Text('Messages', style: menuStyle()),
+                          // onTap: () => Get.to(() => RecentChatListScreen()),
+
+                          onTap: () => Get.to(() => TestRecentChat()),
+
                         ),
-                      ),*/
+                      ),
 
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
@@ -103,7 +114,7 @@ class _CustomerAccountScreenState extends State<CustomerAccountScreen> {
                         child: ListTile(
                           trailing: Icon(Icons.arrow_forward_ios_outlined, size: 15,),
                           title: Text(MyString.privacyPolicy!, style: menuStyle()),
-                          // onTap: () => Navigator.pop(context),
+                          onTap: () => redirectToWeb(MyString.privacyPolicyUrl)
                         ),
                       ),
 
@@ -112,7 +123,7 @@ class _CustomerAccountScreenState extends State<CustomerAccountScreen> {
                         child: ListTile(
                           trailing: Icon(Icons.arrow_forward_ios_outlined, size: 15,),
                           title: Text(MyString.termsOfService!, style: menuStyle()),
-                          // onTap: () => Navigator.pop(context),
+                            onTap: () => redirectToWeb(MyString.termsOfServiceUrl)
                         ),
                       ),
 
@@ -121,7 +132,7 @@ class _CustomerAccountScreenState extends State<CustomerAccountScreen> {
                         child: ListTile(
                           trailing: Icon(Icons.arrow_forward_ios_outlined, size: 15,),
                           title: Text(MyString.refundPolicy!, style: menuStyle()),
-                          // onTap: () => Navigator.pop(context),
+                            onTap: () => redirectToWeb(MyString.refundPolicyUrl)
                         ),
                       ),
 
@@ -183,7 +194,65 @@ class _CustomerAccountScreenState extends State<CustomerAccountScreen> {
   ///
   ///
   yesFunction() {
+    String userId = MySharedPreference.getInt(MyConstants.keyUserId).toString();
     _getXController.hitLogoutApi();
+
+    logoutFirebaseUser(userId);
   }
+
+
+  ///*
+  ///
+  ///
+  Future<String?> logoutFirebaseUser(String userId) async {
+    String? fbUserId = await getFirebaseUserData(userId);
+
+    if (fbUserId != null) {
+      FirebaseFirestore.instance
+          .collection(FirestoreConstants.pathUsersCollection)
+          .doc(fbUserId)
+          .update({
+        FirestoreConstants.fcmToken: "",
+      }).whenComplete(() {
+
+      }).catchError((onError) =>
+          log(tag + ' Firestore updateFirebaseUser Exception : ' +
+              onError.toString()));
+    }
+  }
+
+
+  ///*
+  ///
+  ///
+  Future<String?> getFirebaseUserData(String userId) async{
+    String? fbUserId;
+
+    //get user
+    QuerySnapshot userData = await FirebaseFirestore.instance
+        .collection('Users')
+        .where(FirestoreConstants.userId, isEqualTo: userId)
+        .get();
+
+    if(userData != null){
+      for (QueryDocumentSnapshot document in userData.docs) {
+        fbUserId = document.id;
+      }
+    }
+    return fbUserId;
+  }
+
+
+  ///*
+  ///
+  ///
+  void redirectToWeb(String url) async{
+    if (await launchUrl(Uri.parse(url),
+      mode: LaunchMode.externalApplication,
+    )) {
+      throw 'Could not launch $url';
+    }
+  }
+
 
 }

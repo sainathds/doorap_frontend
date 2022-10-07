@@ -9,6 +9,8 @@ import 'package:door_ap/customer/screen/customer_main_screen.dart';
 import 'package:door_ap/vendor/screen/vendor_home_screen.dart';
 import 'package:door_ap/vendor/screen/venodr_profile_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -19,9 +21,11 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
 
+
   @override
   void initState() {
     // TODO: implement initState
+
     MySharedPreference.getInstance();
     handleSession();
     super.initState();
@@ -72,6 +76,5 @@ class _SplashScreenState extends State<SplashScreen> {
                   (route) => false);
         }
       });
-
   }
 }

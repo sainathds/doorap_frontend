@@ -3,7 +3,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:door_ap/common/helperclass/ok_dialog.dart';
-import 'package:door_ap/common/model/other/firebase_user_model.dart';
+import 'package:door_ap/common/model/other/firestore_user_model.dart';
 import 'package:door_ap/common/model/request/get_otp_request.dart';
 import 'package:door_ap/common/model/request/signup_request.dart';
 import 'package:door_ap/common/model/response/get_otp_response.dart';
@@ -13,6 +13,7 @@ import 'package:door_ap/common/network/url.dart';
 import 'package:door_ap/common/resources/my_assets.dart';
 import 'package:door_ap/common/resources/my_string.dart';
 import 'package:door_ap/common/screen/create_new_pass_screen.dart';
+import 'package:door_ap/common/utils/firestore_constants.dart';
 import 'package:door_ap/common/utils/my_constants.dart';
 import 'package:door_ap/common/utils/my_shared_preference.dart';
 import 'package:door_ap/customer/screen/customer_btm_screen.dart';
@@ -65,6 +66,9 @@ class OtpVerificationController extends GetxController {
     requestModel.firebaseToken = MySharedPreference.getString(MyConstants.keyFcmToken);
     requestModel.isVendor = MySharedPreference.getString(MyConstants.keyVendor);
     requestModel.isCustomer = MySharedPreference.getString(MyConstants.keyCustomer);
+    // requestModel.loginId = MySharedPreference.getString(MyConstants.keyLoginId);
+    // requestModel.loginType = MySharedPreference.getString(MyConstants.keyLoginType);
+    //
 
     final results = await Request().requestPost(
         url: signupApi,
@@ -278,52 +282,29 @@ class OtpVerificationController extends GetxController {
 
   ///*
   ///
-  ///
+  /// create user in firebase database
   void createFirebaseUser() async{
     FirebaseFirestore.instance
-        .collection(MyConstants.pathUsers)
+        .collection(FirestoreConstants.pathUsersCollection)
         .doc()
         .set({
-         MyConstants.userId : MySharedPreference.getInt(MyConstants.keyUserId).toString(),
-         MyConstants.email : MySharedPreference.getString(MyConstants.keyEmail),
-         MyConstants.name  : MySharedPreference.getString(MyConstants.keyName),
-         MyConstants.fcmToken  : MySharedPreference.getString(MyConstants.fcmToken),
-         MyConstants.isVendor  : MySharedPreference.getString(MyConstants.keyVendor),
-         MyConstants.isCustomer  : MySharedPreference.getString(MyConstants.keyCustomer),
+      FirestoreConstants.userId : MySharedPreference.getInt(MyConstants.keyUserId).toString(),
+      FirestoreConstants.email : MySharedPreference.getString(MyConstants.keyEmail),
+      FirestoreConstants.name  : MySharedPreference.getString(MyConstants.keyName),
+      FirestoreConstants.fcmToken  : MySharedPreference.getString(MyConstants.keyFcmToken),
+      FirestoreConstants.isVendor  : MySharedPreference.getString(MyConstants.keyVendor),
+      FirestoreConstants.isCustomer  : MySharedPreference.getString(MyConstants.keyCustomer),
 
     }).then((value) {
-      log(tag + 'Firestore createFirebaseUser Success');
+      log(tag + ' Firestore createFirebaseUser Success');
       if(MySharedPreference.getString(MyConstants.keyVendor) == "True"){
         navigateToProfile(); //vendorProfile
       }else{
         navigateToCustHome();
       }
 
-    }).catchError((onError) => log(tag + 'Firestore createFirebaseUser Exception : ' + onError.toString()) );
-
-
+    }).catchError((onError) => log(tag + ' Firestore createFirebaseUser Exception : ' + onError.toString()) );
   }
 
-  ///*
-  ///
-  ///
-  Future<FirebaseUserModel?> getFirebaseUserData() async{
-    FirebaseUserModel? fbUserModel;
-
-    //get user
-    QuerySnapshot userData = await FirebaseFirestore.instance
-        .collection('Users')
-        .where('Email', isEqualTo: MySharedPreference.getString(MyConstants.keyEmail))
-        .get();
-
-    if(userData != null){
-      for (QueryDocumentSnapshot document in userData.docs) {
-        fbUserModel = FirebaseUserModel();
-        fbUserModel.firebaseUserId = document.id;
-      }
-    }
-
-    return fbUserModel;
-  }
 
 }

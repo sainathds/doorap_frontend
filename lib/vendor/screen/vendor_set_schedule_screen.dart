@@ -133,53 +133,48 @@ class _VendorSetScheduleScreenState extends State<VendorSetScheduleScreen> {
                         color: Colors.white,
                       ),
 
-                      child: Stack(
-                        children: [
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 30.0, left: 60.0, right: 60.0),
+                            child: Image(image: scheduleImg, ),
+                          ),
 
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                            Padding(
-                              padding: const EdgeInsets.only(top: 30.0, left: 60.0, right: 60.0),
-                              child: Image(image: scheduleImg, ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 38.0, left: 23.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Text(MyString.selectDays!,
+                                  textAlign: TextAlign.left,
+                                  style: titleStyle(),),
+                              ],
                             ),
+                          ),
 
-                            Padding(
-                              padding: const EdgeInsets.only(top: 38.0, left: 23.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Text(MyString.selectDays!,
-                                    textAlign: TextAlign.left,
-                                    style: titleStyle(),),
-                                ],
-                              ),
+                          _getXController.weekDaysData.isNotEmpty?
+                          selectDaysContainer(): SizedBox(),
+
+                          Padding(
+                            padding: const EdgeInsets.only(top: 30.0, left: 23.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Text(MyString.selectTime!,
+                                  textAlign: TextAlign.left,
+                                  style: titleStyle(),),
+                              ],
                             ),
+                          ),
 
-                            _getXController.weekDaysData.isNotEmpty?
-                            selectDaysContainer(): SizedBox(),
-
-                            Padding(
-                              padding: const EdgeInsets.only(top: 30.0, left: 23.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Text(MyString.selectDays!,
-                                    textAlign: TextAlign.left,
-                                    style: titleStyle(),),
-                                ],
-                              ),
-                            ),
-
-                            selectDateTimeContainer(),
+                          selectDateTimeContainer(),
 
 
-                              saveButtonContainer()
+                            saveButtonContainer()
 
-                            ],),
-
-
-                        ],
+                          ],),
                       ),
                     )),
 

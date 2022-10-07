@@ -9,6 +9,9 @@ class MyConstants{
   static String keyVendor = "vendor";
   static String keyCustomer = "customer";
   static String keyFcmToken = "fcmToken";
+  static String keyLoginId = "loginId";
+  static String keyLoginType = "loginType";
+
 
   static String keyAccessToken = "accessToken";
   static String keyRefreshToken = "refreshToken";
@@ -19,15 +22,6 @@ class MyConstants{
 
 
 
-  //Firebase collection keys
-  static String pathUsers = 'Users';
-  static String email = 'email';
-  static String name = 'name';
-  static String fcmToken = 'fcmToken';
-  static String isVendor = 'isVendor';
-  static String isCustomer = 'isCustomer';
-  static String userId = 'userId';
-  // static String firebaseUserId = 'firebaseUserId';
 
 
 }

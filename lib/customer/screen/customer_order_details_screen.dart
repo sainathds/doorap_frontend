@@ -4,6 +4,7 @@ import 'package:door_ap/common/network/url.dart';
 import 'package:door_ap/common/resources/my_assets.dart';
 import 'package:door_ap/common/resources/my_colors.dart';
 import 'package:door_ap/common/resources/my_dimens.dart';
+import 'package:door_ap/common/screen/chat_screen.dart';
 import 'package:door_ap/common/utils/my_shared_preference.dart';
 import 'package:door_ap/customer/controller/customer_order_details_controller.dart';
 import 'package:door_ap/customer/screen/customer_btm_screen.dart';
@@ -414,22 +415,28 @@ class _CustomerOrderDetailsScreenState
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                _getXController.vendorName,
-                style: TextStyle(
-                    fontSize: MyDimens.textSize20,
-                    color: Colors.black,
-                    fontFamily: 'roboto_bold'),
+              Expanded(
+                child: Text(
+                  _getXController.vendorName,
+                  style: TextStyle(
+                      fontSize: MyDimens.textSize20,
+                      color: Colors.black,
+                      fontFamily: 'roboto_bold'),
+                ),
               ),
 
-              /*Text(
-               'Avg Time: ' + _getXController.averageTime + ' Hrs',
-               textAlign: TextAlign.center,
-               style: TextStyle(
-                   fontSize: MyDimens.textSize14,
-                   color: Colors.black,
-                   fontFamily: 'montserrat_semiBold'),
-             ),*/
+              SizedBox(width: 15,),
+
+              _getXController.status == 'Accepted' || _getXController.status == 'Started'?
+              InkWell(
+                  onTap: (){
+                    Get.to(() => ChatScreen(receiverId: _getXController.vendorUserId,
+                                            receiverName: _getXController.vendorName,
+                                            callFrom: "",));
+                  },
+                  child: Image(image: messageIcon, color: MyColor.orangeColor, width: 20, height: 20))
+                  : SizedBox()
+
             ],
           ),
           Text(

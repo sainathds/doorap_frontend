@@ -836,7 +836,7 @@ class _CustomerCheckoutScreenState extends State<CustomerCheckoutScreen> {
     try {
 
       BillingDetails billingDetails = BillingDetails(
-          email: 'sonaligirde11@gmail.com'
+          email: MySharedPreference.getString(MyConstants.keyEmail)
       );
       await Stripe.instance.initPaymentSheet(
           paymentSheetParameters: SetupPaymentSheetParameters(
@@ -860,20 +860,24 @@ class _CustomerCheckoutScreenState extends State<CustomerCheckoutScreen> {
   ///
   ///
   displayPaymentSheet(BillingDetails billingDetails) async {
-    await Stripe.instance.presentPaymentSheet();
-    setState(() {});
+    try{
+      await Stripe.instance.presentPaymentSheet();
+      setState(() {});
 
-    PaymentIntent paymentIntent = await Stripe.instance.retrievePaymentIntent(_getXController.stripeClientSecretKey);
+      PaymentIntent paymentIntent = await Stripe.instance.retrievePaymentIntent(_getXController.stripeClientSecretKey);
 
-    log( 'PAYMENT_INTENT _STATUS' + paymentIntent.status.toString());
-    log( 'PAYMENT_INTENT _AMOUNT' + paymentIntent.amount.toString());
+      log( 'PAYMENT_INTENT _STATUS' + paymentIntent.status.toString());
+      log( 'PAYMENT_INTENT _AMOUNT' + paymentIntent.amount.toString());
 
-    if(paymentIntent.status == PaymentIntentsStatus.Succeeded){
-      _getXController.isPaymentSucceeded = true;
-      setState(() {
-
-      });
+      if(paymentIntent.status == PaymentIntentsStatus.Succeeded){
+        _getXController.isPaymentSucceeded = true;
+        setState(() {
+        });
+      }
+    }catch(exception){
+      log('displayPaymentSheet Exception  ' + exception.toString());
     }
+
   }
 
 }

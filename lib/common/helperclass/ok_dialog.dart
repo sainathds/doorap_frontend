@@ -20,19 +20,6 @@ class OKDialog extends StatefulWidget {
       required this.img})
       : super(key: key);
 
-  // OKDialog({
-  //   required this.title,
-  //   required this.description,
-  //   required this.my_context,
-  //   dialog_context = context;
-  // });
-
-  // const
-  // OKDialog
-  //     (
-  //     {required Key? key, required this.title, required this.descriptions, required this.text})
-  //     : super(key: key);
-
   @override
   _OKDialogState createState() => _OKDialogState();
 }

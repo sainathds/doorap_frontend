@@ -68,14 +68,23 @@ class _CustomerVendorProfileScreenState extends State<CustomerVendorProfileScree
 
             headerWidget(),
 
-            profileDataWidget(),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                  profileDataWidget(),
 
-            _getXController.reviewAndFeedbackData != null && _getXController.reviewAndFeedbackData!.isNotEmpty?
-            reviewsAndFeedbackWidget()
-                : SizedBox(),
+                  _getXController.reviewAndFeedbackData != null && _getXController.reviewAndFeedbackData!.isNotEmpty?
+                  reviewsAndFeedbackWidget()
+                      : SizedBox(),
 
+
+                ],),
+              ),
+            ),
 
             continueButtonWidget()
+
           ],
         ),
       ),
@@ -486,7 +495,7 @@ class _CustomerVendorProfileScreenState extends State<CustomerVendorProfileScree
     return
       Container(
         width: double.infinity,
-        margin: const EdgeInsets.only(top: 22.0, left: 23.0, right: 23.0),
+        padding: const EdgeInsets.only(top: 10.0, left: 23.0, right: 23.0, bottom: 10),
         child: ElevatedButton(
             onPressed: () async{
               var nav = await Get.to(() => CustomerVendorServicesScreen(

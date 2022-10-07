@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:door_ap/common/helperclass/ask_dialog.dart';
 import 'package:door_ap/common/resources/my_assets.dart';
 import 'package:door_ap/common/resources/my_colors.dart';
@@ -7,6 +8,9 @@ import 'package:door_ap/common/resources/my_dimens.dart';
 import 'package:door_ap/common/resources/my_string.dart';
 import 'package:door_ap/common/screen/change_password_screen.dart';
 import 'package:door_ap/common/screen/login_screen.dart';
+import 'package:door_ap/common/screen/recent_chat_list_screen.dart';
+import 'package:door_ap/common/screen/test_recent_chat.dart';
+import 'package:door_ap/common/utils/firestore_constants.dart';
 import 'package:door_ap/common/utils/my_constants.dart';
 import 'package:door_ap/common/utils/my_shared_preference.dart';
 import 'package:door_ap/vendor/controller/vendor_home_controller.dart';
@@ -39,6 +43,8 @@ class VendorSideNavDrawer extends StatefulWidget {
 class _VendorSideNavDrawerState extends State<VendorSideNavDrawer> {
 
 
+  String tag = 'VendorSideNavDrawer';
+
   @override
   void initState() {
     // TODO: implement initState
@@ -56,37 +62,44 @@ class _VendorSideNavDrawerState extends State<VendorSideNavDrawer> {
           children: [
             Padding(
               padding: const EdgeInsets.only(top: 30.0, left: 20.0),
-              child: Row(children: [
-                Text(MyString.areYouAvailable!,
-                    style: TextStyle(fontSize: MyDimens.textSize20,
-                        color: Colors.white,
-                        fontFamily: 'montserrat_regular')),
+              child: Row(
+                children: [
 
-                SizedBox(width: 10.0,),
+                Expanded(
+                  flex: 2,
+                  child: Text(MyString.areYouAvailable!,
+                      style: TextStyle(fontSize: MyDimens.textSize18,
+                          color: Colors.white,
+                          fontFamily: 'montserrat_regular')),
+                ),
 
-                FlutterSwitch(
-                  width: 70.0,
-                  height: 30.0,
-                  valueFontSize: 16.0,
-                  value: widget.getXController.isAvailable,
-                  borderRadius: 32.0,
-                  padding: 5.0,
-                  showOnOff: true,
-                  activeText: 'Yes',
-                  inactiveText: 'No',
-                  activeTextColor: Colors.white,
-                  inactiveTextColor: Colors.white,
-                  activeColor: Colors.green,
-                  inactiveColor: Colors.orangeAccent,
-                  activeTextFontWeight: FontWeight.normal,
-                  inactiveTextFontWeight: FontWeight.normal,
-                  onToggle: (val) {
-                    setState(() {
-                      widget.getXController.isAvailable = val;
-                      log("IS_AVAILABLE :" + widget.getXController.isAvailable.toString());
-                      widget.getXController.hitSetAvailabilityApi();
-                    });
-                  },
+                SizedBox(width: 5.0,),
+
+                Expanded(
+                  child: FlutterSwitch(
+                    width: 70.0,
+                    height: 30.0,
+                    valueFontSize: 16.0,
+                    value: widget.getXController.isAvailable,
+                    borderRadius: 32.0,
+                    padding: 5.0,
+                    showOnOff: true,
+                    activeText: 'Yes',
+                    inactiveText: 'No',
+                    activeTextColor: Colors.white,
+                    inactiveTextColor: Colors.white,
+                    activeColor: Colors.green,
+                    inactiveColor: Colors.orangeAccent,
+                    activeTextFontWeight: FontWeight.normal,
+                    inactiveTextFontWeight: FontWeight.normal,
+                    onToggle: (val) {
+                      setState(() {
+                        widget.getXController.isAvailable = val;
+                        log("IS_AVAILABLE :" + widget.getXController.isAvailable.toString());
+                        widget.getXController.hitSetAvailabilityApi();
+                      });
+                    },
+                  ),
                 ),
               ],),
             ),
@@ -128,19 +141,23 @@ class _VendorSideNavDrawerState extends State<VendorSideNavDrawer> {
                           ),
                         ),
 
-                        /*//Set Services
+
+                        //Messages
                         Padding(
                           padding: const EdgeInsets.only(left: 0.0,),
                           child: ListTile(
-                              leading: Image(image: serviceIcon, width: 22.0, height: 22.0, color: Colors.white, alignment: Alignment.bottomCenter,),
-                              title: Text(MyString.setServices!, style: menuStyle()),
-                              onTap: () {
+                              leading: Image(image: messageIcon, width: 22.0, height: 22.0, color: Colors.white, alignment: Alignment.bottomCenter,),
+                              title: Text('Messages', style: menuStyle()),
+                              onTap: () async{
                                 Navigator.pop(context);
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => const VendorCategoriesScreen()));
+                                Route route = MaterialPageRoute(builder: (context) => TestRecentChat());
+                                var nav = await Navigator.of(context).push(route);
+                                if (nav == true || nav == null) {
+                                  widget.getXController.hitViewProfileApi();
+                                }
                               }
                           ),
                         ),
-*/
 
 
                         //Vendor Services
@@ -178,7 +195,7 @@ class _VendorSideNavDrawerState extends State<VendorSideNavDrawer> {
                               title: Text(MyString.payment!, style: menuStyle()),
                               onTap: () {
                                 Navigator.pop(context);
-                                // Navigator.push(context, MaterialPageRoute(builder: (context) => const VendorPaymentScreen()));
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => const VendorPaymentScreen()));
                               }
                           ),
                         ),
@@ -278,6 +295,54 @@ class _VendorSideNavDrawerState extends State<VendorSideNavDrawer> {
   ///
   ///
   yesFunction() {
+    String userId = MySharedPreference.getInt(MyConstants.keyUserId).toString();
     widget.getXController.hitLogoutApi();
+
+    logoutFirebaseUser(userId);
   }
+
+
+  ///*
+  ///
+  ///
+  Future<String?> logoutFirebaseUser(String userId) async {
+    String? fbUserId = await getFirebaseUserData(userId);
+
+    if (fbUserId != null) {
+      FirebaseFirestore.instance
+          .collection(FirestoreConstants.pathUsersCollection)
+          .doc(fbUserId)
+          .update({
+        FirestoreConstants.fcmToken: "",
+      }).whenComplete(() {
+
+      }).catchError((onError) =>
+          log(tag + ' Firestore updateFirebaseUser Exception : ' +
+              onError.toString()));
+    }
+  }
+
+
+  ///*
+  ///
+  ///
+  Future<String?> getFirebaseUserData(String userId) async{
+    String? fbUserId;
+
+    //get user
+    QuerySnapshot userData = await FirebaseFirestore.instance
+        .collection('Users')
+        .where(FirestoreConstants.userId, isEqualTo: userId)
+        .get();
+
+    if(userData != null){
+      for (QueryDocumentSnapshot document in userData.docs) {
+        fbUserId = document.id;
+      }
+    }
+    return fbUserId;
+  }
+
+
+
 }

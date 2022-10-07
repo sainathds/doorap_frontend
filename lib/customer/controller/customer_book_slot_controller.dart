@@ -22,6 +22,7 @@ class CustomerBookSlotController extends GetxController{
   TextEditingController timeEditController = TextEditingController();
   bool isTimeEmpty = false;
   bool isTimeInValid = false;
+  bool isSelectPreviousTime = false;
 
   List<Data> data = <Data>[];
   int currentDateIndex = 0;

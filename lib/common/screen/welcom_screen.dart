@@ -6,6 +6,7 @@ import 'package:door_ap/common/resources/my_colors.dart';
 import 'package:door_ap/common/resources/my_dimens.dart';
 import 'package:door_ap/common/resources/my_string.dart';
 import 'package:door_ap/common/screen/login_screen.dart';
+import 'package:door_ap/common/screen/social_login_screen.dart';
 import 'package:door_ap/common/screen/splash_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -60,22 +61,28 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 // Slider
                 Expanded(
                   flex: 1,
-                  child: CarouselSlider.builder(
-                    carouselController: buttonCarouselController,
-                    itemCount: welcomeList.length,
-                    itemBuilder: (context,index, position ){
-                      return MyImageView(welcomeList[index]);
-                    },
-                    options: CarouselOptions(
-                        height: MediaQuery.of(context).size.height,
-                        autoPlay: false,
-                        enlargeCenterPage: true,
-                        onPageChanged: (index, reason) {
-                          setState(() {
-                            currentPos = index;
-                          });
-                        }
-                    ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: CarouselSlider.builder(
+                          carouselController: buttonCarouselController,
+                          itemCount: welcomeList.length,
+                          itemBuilder: (context,index, position ){
+                            return MyImageView(welcomeList[index]);
+                          },
+                          options: CarouselOptions(
+                              height: MediaQuery.of(context).size.height,
+                              autoPlay: false,
+                              enlargeCenterPage: true,
+                              onPageChanged: (index, reason) {
+                                setState(() {
+                                  currentPos = index;
+                                });
+                              }
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
 
@@ -133,7 +140,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   ///
   ///
   void navigateToLoginScreen() {
-    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => LoginScreen()), (route) => false);
+    // Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => LoginScreen()), (route) => false);
+    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => SocialLoginScreen()), (route) => false);
 
   }
 }
@@ -147,20 +155,35 @@ class MyImageView extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return Column(
-      children: [
-        Image(image: welcomeModel.img, width: MediaQuery.of(context).size.width, height: 236.0,),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      child: Column(
+        children: [
+          Expanded(child: Image(image: welcomeModel.img, width: MediaQuery.of(context).size.width, height: 236.0,)),
 
-        Padding(
-          padding: const EdgeInsets.only(top: 25.0),
-          child: Text(welcomeModel.title, style: TextStyle(color: Colors.black, fontSize: MyDimens.textSize24, fontFamily: 'roboto_medium'), textAlign: TextAlign.center,),
-        ),
+          Row(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 25.0),
+                  child: Text(welcomeModel.title, style: TextStyle(color: Colors.black, fontSize: MyDimens.textSize22, fontFamily: 'roboto_medium'), textAlign: TextAlign.center,),
+                ),
+              ),
+            ],
+          ),
 
-        Padding(
-          padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
-          child: Text(welcomeModel.description, style: TextStyle(color: MyColor.textGrey, fontSize: MyDimens.textSize14, height: 1.1, fontFamily: 'montserrat_medium'), textAlign: TextAlign.center,),
-        ),
-      ],
+          Row(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
+                  child: Text(welcomeModel.description, style: TextStyle(color: MyColor.textGrey, fontSize: MyDimens.textSize14, height: 1.1, fontFamily: 'montserrat_medium'), textAlign: TextAlign.center,),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 

@@ -45,6 +45,7 @@ class CustomerVendorsResponse {
 }
 
 class Payload {
+  int? _fkVendorFkUserId;
   int? _fkVendorId;
   String? _fkVendorFullName;
   String? _fkVendorProfileImage;
@@ -58,7 +59,12 @@ class Payload {
         String? fkVendorProfileImage,
         String? fkCategoryCategoryName,
         double? rating,
-        bool? likeDislike}) {
+        bool? likeDislike,
+        int? fkVendorFkUserId}) {
+
+    if (fkVendorFkUserId != null) {
+      this._fkVendorFkUserId = fkVendorFkUserId;
+    }
     if (fkVendorId != null) {
       this._fkVendorId = fkVendorId;
     }
@@ -79,6 +85,9 @@ class Payload {
     }
   }
 
+  int? get fkVendorFkUserId => _fkVendorFkUserId;
+  set fkVendorFkUserId(int? fkVendorFkUserId) =>
+      _fkVendorFkUserId = fkVendorFkUserId;
   int? get fkVendorId => _fkVendorId;
   set fkVendorId(int? fkVendorId) => _fkVendorId = fkVendorId;
   String? get fkVendorFullName => _fkVendorFullName;
@@ -102,6 +111,8 @@ class Payload {
     _fkCategoryCategoryName = json['fk_category__category_name'];
     _rating = json['rating'];
     _likeDislike = json['like_dislike'];
+    _fkVendorFkUserId = json['fk_vendor__fk_user__id'];
+
   }
 
   Map<String, dynamic> toJson() {
@@ -112,6 +123,8 @@ class Payload {
     data['fk_category__category_name'] = this._fkCategoryCategoryName;
     data['rating'] = this._rating;
     data['like_dislike'] = this._likeDislike;
+    data['fk_vendor__fk_user__id'] = this._fkVendorFkUserId;
+
     return data;
   }
 }

@@ -5,6 +5,9 @@ class SignupRequest {
   String? _firebaseToken;
   String? _isCustomer;
   String? _isVendor;
+  // String? _loginId;
+  // String? _loginType;
+
 
   SignupRequest(
       {String? name,
@@ -12,7 +15,10 @@ class SignupRequest {
         String? password,
         String? firebaseToken,
         String? isCustomer,
-        String? isVendor}) {
+        String? isVendor,
+        // String? loginId,
+        // String? loginType
+        }) {
     if (name != null) {
       this._name = name;
     }
@@ -31,6 +37,12 @@ class SignupRequest {
     if (isVendor != null) {
       this._isVendor = isVendor;
     }
+   /* if (loginId != null) {
+      this._loginId = loginId;
+    }
+    if (loginType != null) {
+      this._loginType = loginType;
+    }*/
   }
 
   String? get name => _name;
@@ -45,6 +57,12 @@ class SignupRequest {
   set isCustomer(String? isCustomer) => _isCustomer = isCustomer;
   String? get isVendor => _isVendor;
   set isVendor(String? isVendor) => _isVendor = isVendor;
+/*
+  String? get loginId => _loginId;
+  set loginId(String? loginId) => _loginId = loginId;
+  String? get loginType => _loginType;
+  set loginType(String? loginType) => _loginType = loginType;
+*/
 
   SignupRequest.fromJson(Map<String, dynamic> json) {
     _name = json['name'];
@@ -53,6 +71,11 @@ class SignupRequest {
     _firebaseToken = json['firebase_token'];
     _isCustomer = json['is_customer'];
     _isVendor = json['is_vendor'];
+/*
+    _loginId = json['login_id'];
+    _loginType = json['login_type'];
+*/
+
   }
 
   Map<String, dynamic> toJson() {
@@ -63,6 +86,8 @@ class SignupRequest {
     data['firebase_token'] = this._firebaseToken;
     data['is_customer'] = this._isCustomer;
     data['is_vendor'] = this._isVendor;
+/*    data['login_id'] = this._loginId;
+    data['login_type'] = this._loginType;*/
     return data;
   }
 }

@@ -10,6 +10,7 @@ import 'package:door_ap/common/network/url.dart';
 import 'package:door_ap/common/resources/my_assets.dart';
 import 'package:door_ap/common/resources/my_string.dart';
 import 'package:door_ap/common/screen/login_screen.dart';
+import 'package:door_ap/common/screen/social_login_screen.dart';
 import 'package:door_ap/common/utils/my_constants.dart';
 import 'package:door_ap/common/utils/my_shared_preference.dart';
 import 'package:flutter/material.dart';
@@ -126,7 +127,8 @@ class CreateNewPassController extends GetxController{
   ///*
   ///
   navigateToLoginScreen() {
-    Navigator.pushAndRemoveUntil(Get.context!, MaterialPageRoute(builder: (context) => LoginScreen()), (route) => false);
+    // Navigator.pushAndRemoveUntil(Get.context!, MaterialPageRoute(builder: (context) => LoginScreen()), (route) => false);
+    Navigator.pushAndRemoveUntil(Get.context!, MaterialPageRoute(builder: (context) => SocialLoginScreen()), (route) => false);
   }
 
   ///*

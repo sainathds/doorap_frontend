@@ -631,8 +631,7 @@ class _VendorShowEditProfileScreenState extends State<VendorShowEditProfileScree
         break;
 
       case "camera": // CAMERA CAPTURE CODE
-        _getXController.imageFile = (await ImagePicker().pickImage(
-            source: ImageSource.camera, imageQuality: 90))!;
+        _getXController.imageFile = (await ImagePicker().pickImage(source: ImageSource.camera, imageQuality: 90))!;
         isLoad = true;
         refreshPage();
         break;

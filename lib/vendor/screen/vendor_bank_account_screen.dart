@@ -129,7 +129,8 @@ class _VendorBankAccountScreenState extends State<VendorBankAccountScreen> {
                                     elevation: 5),
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(vertical: 12.0),
-                                  child: Text(MyString.submit!,
+                                  child: Text(
+                                    _getXController.isAccountAdded? 'Update': MyString.submit!,
                                     style: const TextStyle(
                                         fontSize: MyDimens.textSize20,
                                         color: Colors.white,

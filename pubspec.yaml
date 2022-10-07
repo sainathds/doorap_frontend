@@ -52,7 +52,7 @@ dependencies:
 
   dropdown_search: ^3.0.1
   google_places_picker: ^3.0.2
-  flutter_local_notifications: ^5.0.0+4
+  flutter_local_notifications: 9.1.0
   flutter_swiper_plus: ^2.0.4
 #  geolocator: ^8.0.5
   geocoding: ^2.0.4
@@ -65,7 +65,11 @@ dependencies:
   oktoast: ^3.1.4
   flutter_rating_bar: ^4.0.1
   flutter_stripe: ^2.5.0
-#  flutter_stripe_payment: ^0.0.17
+  google_sign_in: 5.2.3
+  location: ^4.4.0
+  encrypt: ^5.0.1
+  flutter_login_facebook: ^1.6.0
+
 
 
 

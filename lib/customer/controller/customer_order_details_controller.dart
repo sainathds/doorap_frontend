@@ -44,6 +44,7 @@ class CustomerOrderDetailsController extends GetxController{
 
   //vendor_profile
   int vendorId = 0;
+  int vendorUserId = 0;
   String vendorName = "";
   String categoryName = "";
   String vendorImage = "";
@@ -108,6 +109,7 @@ class CustomerOrderDetailsController extends GetxController{
             //vendor_details
             if(orderPayload!.vendorDetails != null){
               // vendorId = orderPayload!.vendorDetails!.
+              vendorUserId = orderPayload!.vendorDetails!.fkVendorFkUserId!;
               vendorName = orderPayload!.vendorDetails!.fkVendorFullName!;
               vendorImage = orderPayload!.vendorDetails!.fkVendorProfileImage!;
               categoryName = orderPayload!.vendorDetails!.fkServiceFkCategoryCategoryName!;

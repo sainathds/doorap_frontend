@@ -44,6 +44,7 @@ class VendorBankAccountController extends GetxController{
   bool isBankNameEmpty = false;
   bool isIbanNumberEmpty = false;
 
+  bool isAccountAdded = false;
 
   /*For France
 IBAN number
@@ -61,8 +62,7 @@ Bank
     bankNameEditController.clear();
     bicCodeEditController.clear();
     ibanCodeEditController.clear();
-
-
+    isAccountAdded = false;
   }
 
   ///*
@@ -206,6 +206,7 @@ Bank
 
         if(responseModel.status == 200){
           if(responseModel.payload != null && responseModel.payload!.isNotEmpty){
+            isAccountAdded = true;
             accountNoEditController.text = responseModel.payload![0].accountNo!;
             confirmAccNoEditController.text = responseModel.payload![0].accountNo!;
             bankNameEditController.text = responseModel.payload![0].bankName!;

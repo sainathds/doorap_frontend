@@ -3,12 +3,15 @@ import 'dart:developer';
 
 import 'package:door_ap/common/helperclass/ok_dialog.dart';
 import 'package:door_ap/common/model/request/logout_request.dart';
+import 'package:door_ap/common/model/request/notification_count_request.dart';
 import 'package:door_ap/common/model/response/logout_response.dart';
+import 'package:door_ap/common/model/response/notification_count_response.dart';
 import 'package:door_ap/common/network/request.dart';
 import 'package:door_ap/common/network/url.dart';
 import 'package:door_ap/common/resources/my_assets.dart';
 import 'package:door_ap/common/resources/my_string.dart';
 import 'package:door_ap/common/screen/login_screen.dart';
+import 'package:door_ap/common/screen/social_login_screen.dart';
 import 'package:door_ap/common/utils/my_constants.dart';
 import 'package:door_ap/common/utils/my_shared_preference.dart';
 import 'package:door_ap/vendor/model/request/vendor_availability_request.dart';
@@ -33,6 +36,8 @@ class VendorHomeController extends GetxController{
 
   double latitude = 0.0;
   double longitude = 0.0;
+
+  int notificationCount = 0;
 
   List<currentOrderResponse.Payload> currentOrderList = <currentOrderResponse.Payload>[] ;
 
@@ -215,8 +220,11 @@ class VendorHomeController extends GetxController{
         log(tag + "hitLoginApi Response : " + json.encode(responseModel));
         if (responseModel.status == 200) {
           MySharedPreference.logout();
+          // Navigator.pushAndRemoveUntil(
+          //     Get.context!, MaterialPageRoute(builder: (context) => LoginScreen()), (route) => false );
+
           Navigator.pushAndRemoveUntil(
-              Get.context!, MaterialPageRoute(builder: (context) => LoginScreen()), (route) => false );
+              Get.context!, MaterialPageRoute(builder: (context) => SocialLoginScreen()), (route) => false );
         } else { // if error occur then msg is "Something went wrong or validation msg"
           showDialog(
             context: Get.context!,
@@ -245,6 +253,43 @@ class VendorHomeController extends GetxController{
             ),
       );
     }
+  }
+
+
+  ///*
+  ///
+  ///
+  void hitNotificationCountApi() async{
+    NotificationCountRequest requestModel = NotificationCountRequest();
+    requestModel.userId = MySharedPreference.getInt(MyConstants.keyUserId);
+    requestModel.userType = 'Vendor';
+
+    final results = await Request().requestPostHeaderNoProgressBar(
+        url: notificationCountApi,
+        parameters: json.encode(requestModel),
+        context: Get.context);
+
+    try{
+      if(results != null){
+
+        NotificationCountResponse responseModel = NotificationCountResponse.fromJson(results);
+        log(tag + "hitNotificationCountApi Response : " + json.encode(responseModel));
+
+        if(responseModel.status == 200){
+          notificationCount = responseModel.notificationCount!;
+          refreshPage.call();
+        }else{// if error occur then msg is "Something went wrong or validation msg"
+          log('hitNotificationCountApi Error: ');
+          notificationCount = 0;
+          refreshPage.call();
+        }
+      }
+    }catch(exception){
+      log('hitNotificationCountApi Exception: ' + exception.toString() );
+      notificationCount = 0;
+      refreshPage.call();
+    }
+
   }
 
 

@@ -2,7 +2,8 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:door_ap/common/model/notification_response.dart';
+import 'package:door_ap/common/model/response/notification_response.dart';
+import 'package:door_ap/common/screen/chat_screen.dart';
 import 'package:door_ap/customer/screen/customer_btm_screen.dart';
 import 'package:door_ap/vendor/screen/vendor_home_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -67,22 +68,23 @@ class PushNotificationService{
   ///*
   ///
   ///
-  Future<void> _showNotification(String title, String desc, String userType, String status, String channelId) async {
+  Future<void> _showNotification(NotificationResponse responseModel, String channelId) async {
     AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails(channelId, 'card_channel', 'card_description',
+    AndroidNotificationDetails(channelId, 'card_channel', /*'card_description',*/
       importance: Importance.high,
       priority: Priority.high,
       ticker: 'ticker',
       playSound: true,
       sound: RawResourceAndroidNotificationSound('alarm'));
     NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
-    await flutterLocalNotificationsPlugin.show(id++, title, desc, platformChannelSpecifics, /*payload: payload*/);
+    await flutterLocalNotificationsPlugin.show(id++, responseModel.title, responseModel.body, platformChannelSpecifics, /*payload: payload*/);
 
-    if(userType == 'Vendor'){
+    if(responseModel.userType == 'Vendor' && responseModel.action == 'Home'){
       navigateToVendorHomeScreen();
 
-    }else if(userType == 'Customer'){
+    }else if(responseModel.userType == 'Customer' && responseModel.action == 'Home'){
       navigateToCustomerHomeScreen();
+
     }
 
   }
@@ -104,17 +106,14 @@ class PushNotificationService{
       print('User granted permission');
 
       FirebaseMessaging.onMessage.listen((RemoteMessage message) async{
-        log("NOTIFICATION _PAYLOAD: " + message.data.toString());
-        print('Message body: ${message.notification?.body}, data: ${message.data}');
+        log("message _Data: " + message.data.toString());
+        // print('Message body: ${message.notification?.body}, data: ${message.data}');
 
 
         NotificationResponse responseModel = NotificationResponse.fromJson(message.data);
-        String userType = responseModel.userType!;
-        String orderStatus = responseModel.orderStatus!;
-        log('NOTIFICATION FOREGROUND _UserType ' + userType);
-        log('NOTIFICATION FOREGROUND _orderStatus ' + orderStatus);
 
-        _showNotification('${message.notification?.title}', '${message.notification?.body}', userType, orderStatus, 'android_channel_id');
+        _showNotification(responseModel, 'android_channel_id');
+
       });
       tapNatiFicationAppBackground();
       tapNotificationAppKilled();
@@ -147,11 +146,14 @@ class PushNotificationService{
       log('NOTIFICATION APP_KILL _UserType ' + userType);
       log('NOTIFICATION APP_KILL _orderStatus ' + orderStatus);
 
-      if(userType == 'Vendor'){
+      if(userType == 'Vendor' && responseModel.action == 'Home'){
         navigateToVendorHomeScreen();
 
-      }else if(userType == 'Customer'){
+      }else if(userType == 'Customer' && responseModel.action == 'Home'){
         navigateToCustomerHomeScreen();
+
+      }else if((userType == 'Customer' || userType == 'Vendor') && responseModel.action == 'Chat'){
+        navigateToChatScreen(responseModel);
       }
     });
 
@@ -169,11 +171,14 @@ class PushNotificationService{
       log("NOTIFICATION BACKGROUND UserType : " + userType);
       log("NOTIFICATION BACKGROUND Status : " + orderStatus);
 
-      if(userType == 'Vendor'){
+      if(userType == 'Vendor' && responseModel.action == 'Home'){
         navigateToVendorHomeScreen();
 
-      }else if(userType == 'Customer'){
+      }else if(userType == 'Customer' && responseModel.action == 'Home'){
         navigateToCustomerHomeScreen();
+
+      }else if((userType == 'Customer' || userType == 'Vendor') && responseModel.action == 'Chat'){
+        navigateToChatScreen(responseModel);
       }
     });
 
@@ -200,6 +205,17 @@ class PushNotificationService{
         Get.context!,
         MaterialPageRoute(builder: (context) => CustomerBtmScreen() ),
             (route) => false);
+  }
+
+  ///*
+  ///
+  ///
+  void navigateToChatScreen(NotificationResponse responseModel) {
+    Navigator.pushAndRemoveUntil(
+        Get.context!,
+        MaterialPageRoute(builder: (context) => ChatScreen(receiverId: int.parse(responseModel.actionId!), receiverName: responseModel.title!, callFrom: responseModel.userType!) ),
+            (route) => false);
+
   }
 
 
