@@ -295,7 +295,7 @@ class _LoginScreenState extends State<LoginScreen> {
             });
           },
         ),
-        errorText: _getXController.isPasswordEmpty ? "Please Enter Password" : null ,
+        errorText: _getXController.isPasswordEmpty ? "Please Enter Your Password" : null ,
 
       ),
     );
