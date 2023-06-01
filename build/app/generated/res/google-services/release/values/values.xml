@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="gcm_defaultSenderId" translatable="false">628769608440</string>
+    <string name="google_api_key" translatable="false">AIzaSyCVFllfHUhHvKxAMepxcA-72zEoFiOITVk</string>
+    <string name="google_app_id" translatable="false">1:628769608440:android:c53d39667b794022cb610d</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyCVFllfHUhHvKxAMepxcA-72zEoFiOITVk</string>
+    <string name="google_storage_bucket" translatable="false">doorap-350711.appspot.com</string>
+    <string name="project_id" translatable="false">doorap-350711</string>
+</resources>

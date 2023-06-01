@@ -1,0 +1,5 @@
+<resources>
+<string name="facebook_app_id">YOUR_APP_ID</string>
+<string name="facebook_client_token">YOUR_CLIENT_ACCESS_TOKEN</string>
+<string name="google_key">AIzaSyCVFllfHUhHvKxAMepxcA-72zEoFiOITVk</string>
+</resources>

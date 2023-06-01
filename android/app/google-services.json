@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "628769608440",
+    "project_id": "doorap-350711",
+    "storage_bucket": "doorap-350711.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:628769608440:android:c53d39667b794022cb610d",
+        "android_client_info": {
+          "package_name": "com.app.door_ap"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVFllfHUhHvKxAMepxcA-72zEoFiOITVk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

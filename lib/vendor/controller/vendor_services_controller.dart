@@ -1,0 +1,75 @@
+import 'dart:convert';
+import 'dart:developer';
+
+import 'package:door_ap/common/helperclass/ok_dialog.dart';
+import 'package:door_ap/common/network/request.dart';
+import 'package:door_ap/common/network/url.dart';
+import 'package:door_ap/common/resources/my_assets.dart';
+import 'package:door_ap/common/resources/my_string.dart';
+import 'package:door_ap/vendor/model/request/vendor_services_request.dart';
+import 'package:door_ap/vendor/model/response/vendor_services_response.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+class VendorServicesController extends GetxController{
+
+  String tag = "VendorServicesController";
+  late Function refreshPage;
+  late int selectedCategoryId;
+  List<Payload>  servicesData = <Payload>[];
+
+
+  ///*
+  ///
+  /// get all services of selected category by calling show_services/ Api
+  void hitServicesApi() async{
+    VendorServicesRequest requestModel = VendorServicesRequest();
+    requestModel.id = selectedCategoryId;
+
+    final results = await Request().requestPostWithHeader(
+        url: vendorServicesApi,
+        context: Get.context,
+        parameters: json.encode(requestModel));
+
+    try{
+      if(results != null){
+        VendorServicesResponse responseModel = VendorServicesResponse.fromJson(results);
+        log(tag + "hitServicesApi Response : " + json.encode(responseModel));
+        if(responseModel.status == 200){
+          if(responseModel.payload != null){
+            servicesData = responseModel.payload!;
+            refreshPage.call();
+          }
+
+        }else{   // if error occur then msg is "Something went wrong or validation msg"
+          showDialog(
+            context: Get.context!,
+            builder: (BuildContext context1) => OKDialog(
+              title: "",
+              descriptions: responseModel.msg!,
+              img: errorImage,
+              text: '',
+              key: null,
+            ),
+          );
+
+        }
+      }
+    }catch(exception){
+      log(tag + "hitServicesApi Exception " + exception.toString());
+      showDialog(
+        context: Get.context!,
+        builder: (BuildContext context1) => OKDialog(
+          title: "",
+          descriptions: MyString.errorMessage!,
+          img: errorImage,
+          text: '',
+          key: null,
+        ),
+      );
+    }
+
+  }
+
+
+}

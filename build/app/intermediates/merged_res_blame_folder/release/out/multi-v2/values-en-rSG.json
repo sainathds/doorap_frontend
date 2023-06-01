@@ -1,0 +1,26 @@
+{
+    "logs": [
+        {
+            "outputFile": "E:\\Flutter\\NagpurTechquadra\\DOOR_AP_WORK\\19-05-2023\\door_ap\\build\\app\\intermediates\\incremental\\mergeReleaseResources\\merged.dir\\values-en-rSG\\values-en-rSG.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\Sonali\\.gradle\\caches\\transforms-3\\e128927c72599731429afb3c4b1f3e22\\transformed\\jetified-play-services-wallet-19.1.0\\res\\values-en-rSG\\values.xml",
+                    "from": {
+                        "startLines": "4",
+                        "startColumns": "0",
+                        "startOffsets": "206",
+                        "endColumns": "70",
+                        "endOffsets": "276"
+                    },
+                    "to": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "74",
+                        "endOffsets": "125"
+                    }
+                }
+            ]
+        }
+    ]
+}
